@@ -34,10 +34,12 @@ public class CitiesFragment extends Fragment {
 
     private static final int PLACE_PICKER_REQUEST = 111;
     private static final String TAG = CitiesFragment.class.getSimpleName();
+    private static final String KEY_FIST_VISIBLE_POSITION = "KEY_FIST_VISIBLE_POSITION";
     private CitiesViewModel mViewModel;
     private TextView mEmptyListMessage;
     private RecyclerView mCitiesRecyclerView;
     private CitiesAdapter mCitiesAdapter;
+    private int mPosition = RecyclerView.NO_POSITION;
 
     private CitiesAdapter.OnCityClickListener mOnCityClickListener = new CitiesAdapter.OnCityClickListener() {
         @Override
@@ -80,6 +82,13 @@ public class CitiesFragment extends Fragment {
         initViewModel();
 
         initUI(view);
+        restoreState(savedInstanceState);
+    }
+
+    private void restoreState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            mPosition = savedInstanceState.getInt(KEY_FIST_VISIBLE_POSITION, RecyclerView.NO_POSITION);
+        }
     }
 
     private void initUI(@NonNull View view) {
@@ -110,7 +119,9 @@ public class CitiesFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        // TODO: 5/10/18 implement save instance state
+
+        int firstVisiblePosition = ((LinearLayoutManager) mCitiesRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        outState.putInt(KEY_FIST_VISIBLE_POSITION, firstVisiblePosition);
     }
 
     private void addCityClick(View view) {
@@ -168,6 +179,14 @@ public class CitiesFragment extends Fragment {
 //        if new city was added, need to scroll list to start
         if (isCityAdded(cities.size())) {
             mCitiesRecyclerView.smoothScrollToPosition(0);
+        }
+        tryToRestoreScrolledPosition(cities.size());
+    }
+
+    private void tryToRestoreScrolledPosition(int itemsCount) {
+        if (mPosition != RecyclerView.NO_POSITION && mPosition < itemsCount) {
+            mCitiesRecyclerView.smoothScrollToPosition(mPosition);
+            mPosition = RecyclerView.NO_POSITION;
         }
     }
 
