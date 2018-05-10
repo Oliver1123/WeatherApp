@@ -16,7 +16,10 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.oliver.weatherapp.Injector;
 import com.oliver.weatherapp.R;
+import com.oliver.weatherapp.data.local.model.CityEntry;
+import com.oliver.weatherapp.data.repositories.CitiesRepository;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -78,8 +81,16 @@ public class CitiesFragment extends Fragment {
     }
 
     private void handleSelectedPlace(Place place) {
-        CharSequence name = place.getName();
+        String name = place.getName().toString();
+        String address = (place.getAddress() != null) ?
+                place.getAddress().toString() : "";
         LatLng latLng = place.getLatLng();
-        Log.d(TAG, "handleSelectedPlace: name: " + name + " latlng: " + latLng);
+        Log.d(TAG, "handleSelectedPlace: name: " + name + " address " + address + " latlng: " + latLng);
+
+        CityEntry cityEntry = new CityEntry(name, address, latLng.latitude, latLng. longitude);
+        // TODO: 5/10/18 remove this from here, should be in viewModel
+        CitiesRepository repository = Injector.provideCitiesRepository(getContext().getApplicationContext());
+
+        repository.addCity(cityEntry);
     }
 }
