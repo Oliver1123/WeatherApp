@@ -21,7 +21,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread"
-        tools:text="Kyiv"/>
+        tools:text="Kyiv"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
 
     <TextView
         android:id="@+id/tv_city_address"
@@ -37,12 +38,15 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_city_name"
-        tools:text="Kyiv, Ukraine"/>
+        tools:text="Kyiv, Ukraine"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Caption"/>
 
     <ImageView
         android:id="@+id/ic_delete_city"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"

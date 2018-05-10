@@ -2,6 +2,7 @@ package com.oliver.weatherapp.screens.home;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,11 +25,15 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.ViewHolder
         mInflater = LayoutInflater.from(context);
     }
 
-    public void setCities(List<CityEntry> cities) {
+    public void setCities(@NonNull List<CityEntry> cities) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(
+                new CitiesDiffCallback(mCities, cities));
+        diffResult.dispatchUpdatesTo(this);
+
         mCities.clear();
         mCities.addAll(cities);
-        notifyDataSetChanged();
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

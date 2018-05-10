@@ -13,7 +13,7 @@ import java.util.List;
 @Dao
 public interface CitiesDao {
 
-    @Query("SELECT * FROM cities")
+    @Query("SELECT * FROM cities ORDER BY id DESC")
     LiveData<List<CityEntry>> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

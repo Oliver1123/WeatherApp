@@ -147,8 +147,7 @@ public class CitiesFragment extends Fragment {
         mCitiesRecyclerView.setVisibility(View.INVISIBLE);
     }
 
-    // TODO: 5/10/18 newest should be first, implement diffutils
-    private void displayCities(List<CityEntry> cities) {
+    private void displayCities(@NonNull List<CityEntry> cities) {
         mEmptyListMessage.setVisibility(View.INVISIBLE);
         mCitiesRecyclerView.setVisibility(View.VISIBLE);
 
