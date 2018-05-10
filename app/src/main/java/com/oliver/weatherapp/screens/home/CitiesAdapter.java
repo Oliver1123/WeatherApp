@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +19,11 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.ViewHolder
 
     private final List<CityEntry> mCities = new ArrayList<>();
     private final LayoutInflater mInflater;
+    private final OnCityClickListener mCallback;
 
-    public CitiesAdapter(Context context) {
+    public CitiesAdapter(Context context, OnCityClickListener callback) {
         mInflater = LayoutInflater.from(context);
+        mCallback = callback;
     }
 
     public void setCities(@NonNull List<CityEntry> cities) {
@@ -51,26 +52,56 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.ViewHolder
         return mCities.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    private void onDeleteClick(ViewHolder holder) {
+        int position = holder.getAdapterPosition();
+        mCallback.onDeleteClick(holder.itemView, mCities.get(position), position);
+    }
 
-        private static final String TAG = ViewHolder.class.getSimpleName();
+    private void onItemClick(ViewHolder holder) {
+        int position = holder.getAdapterPosition();
+        mCallback.onItemClick(holder.itemView, mCities.get(position), position);
+    }
+    class ViewHolder extends RecyclerView.ViewHolder {
+
         private final TextView mName;
         private final TextView mAddress;
+        private final View mDeleteIcon;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mName = itemView.findViewById(R.id.tv_city_name);
             mAddress = itemView.findViewById(R.id.tv_city_address);
-            itemView.findViewById(R.id.ic_delete_city).setOnClickListener(this::onDeleteClick);
+            mDeleteIcon = itemView.findViewById(R.id.ic_delete_city);
+
+            mDeleteIcon.setOnClickListener(this::onDeleteClick);
+            itemView.setOnClickListener(this::onItemClick);
         }
 
         private void onDeleteClick(View view) {
-            Log.d(TAG, "onDeleteClick for: " + getAdapterPosition());
+            CitiesAdapter.this.onDeleteClick(this);
+        }
+
+        private void onItemClick(View view) {
+            CitiesAdapter.this.onItemClick(this);
         }
 
         void bind(CityEntry cityEntry) {
             mName.setText(cityEntry.name);
+            mName.setContentDescription(
+                    mName.getContext().getString(R.string.msg_city_name_content_description, cityEntry.name));
+
             mAddress.setText(cityEntry.address);
+            mAddress.setContentDescription(
+                    mAddress.getContext().getString(R.string.msg_city_address_content_description, cityEntry.address));
+
+            mDeleteIcon.setContentDescription(
+                    mDeleteIcon.getContext().getString(R.string.msg_city_delete_button_content_description, cityEntry.name));
         }
     }
+
+    public interface OnCityClickListener {
+        void onDeleteClick(View view, CityEntry city, int position);
+        void onItemClick(View view, CityEntry city, int position);
+    }
+
 }

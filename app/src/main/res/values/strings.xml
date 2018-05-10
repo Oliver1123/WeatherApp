@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <!--                  HOME SCREEN                              -->
     <string name="msg_empty_cities_list">Saved cities not found.\nYou can add new city with \'+\' button</string>
+    <string name="msg_city_delete_button_content_description_empty">Delete item button</string>
+    <string name="msg_city_delete_button_content_description">Delete item button %1$s</string>
+    <string name="msg_city_name_content_description">Item name %1$s</string>
+    <string name="msg_city_address_content_description">Item address %1$s</string>
 </resources>

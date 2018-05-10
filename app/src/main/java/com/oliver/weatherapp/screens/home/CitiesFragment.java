@@ -39,6 +39,19 @@ public class CitiesFragment extends Fragment {
     private RecyclerView mCitiesRecyclerView;
     private CitiesAdapter mCitiesAdapter;
 
+    private CitiesAdapter.OnCityClickListener mOnCityClickListener = new CitiesAdapter.OnCityClickListener() {
+        @Override
+        public void onDeleteClick(View view, CityEntry city, int position) {
+            mViewModel.deleteCity(city);
+        }
+
+        @Override
+        public void onItemClick(View view, CityEntry city, int position) {
+
+        }
+    };
+    private int mCitiesCount = 0;
+
     public static CitiesFragment newInstance() {
 
         Bundle args = new Bundle();
@@ -78,7 +91,7 @@ public class CitiesFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        mCitiesAdapter = new CitiesAdapter(getContext());
+        mCitiesAdapter = new CitiesAdapter(getContext(), mOnCityClickListener);
 
         mCitiesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mCitiesRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.HORIZONTAL));
@@ -152,5 +165,18 @@ public class CitiesFragment extends Fragment {
         mCitiesRecyclerView.setVisibility(View.VISIBLE);
 
         mCitiesAdapter.setCities(cities);
+//        if new city was added, need to scroll list to start
+        if (isCityAdded(cities.size())) {
+            mCitiesRecyclerView.smoothScrollToPosition(0);
+        }
+    }
+
+    private boolean isCityAdded(int citiesCount) {
+        boolean result = false;
+        if (citiesCount > mCitiesCount) {
+            result = true;
+        }
+        mCitiesCount = citiesCount;
+        return result;
     }
 }

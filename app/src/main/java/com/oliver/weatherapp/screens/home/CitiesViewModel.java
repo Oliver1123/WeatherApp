@@ -28,4 +28,8 @@ public class CitiesViewModel extends ViewModel {
     public LiveData<List<CityEntry>> getCities() {
         return mCities;
     }
+
+    public void deleteCity(CityEntry city) {
+        mRepository.deleteCity(city);
+    }
 }

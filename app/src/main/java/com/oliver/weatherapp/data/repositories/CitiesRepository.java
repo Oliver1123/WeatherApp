@@ -42,4 +42,8 @@ public class CitiesRepository {
     public LiveData<List<CityEntry>> getCities() {
         return mCitiesDao.getAll();
     }
+
+    public void deleteCity(CityEntry city) {
+        mExecutors.diskIO().execute(() -> mCitiesDao.deleteCity(city.id));
+    }
 }

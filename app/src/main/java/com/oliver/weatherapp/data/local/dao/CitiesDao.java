@@ -20,6 +20,6 @@ public interface CitiesDao {
     void insert(CityEntry city);
 
     @Query("DELETE FROM cities WHERE id = :id")
-    void deleteCity(int id);
+    void deleteCity(long id);
 
 }
