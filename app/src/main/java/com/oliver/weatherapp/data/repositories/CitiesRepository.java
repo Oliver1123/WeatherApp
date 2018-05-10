@@ -1,5 +1,6 @@
 package com.oliver.weatherapp.data.repositories;
 
+import android.arch.lifecycle.LiveData;
 import android.util.Log;
 
 import com.oliver.weatherapp.AppExecutors;
@@ -13,20 +14,32 @@ public class CitiesRepository {
     private static final String TAG = CitiesRepository.class.getSimpleName();
     private final CitiesDao mCitiesDao;
     private final AppExecutors mExecutors;
+    // For Singleton instantiation
+    private static final Object LOCK = new Object();
+    private static CitiesRepository sInstance;
 
-    public CitiesRepository(AppExecutors executors, CitiesDao dao) {
+    public static CitiesRepository getInstance(AppExecutors executors, CitiesDao dao) {
+        Log.d(TAG, "Get the repository");
+        if (sInstance == null) {
+            synchronized (LOCK) {
+                sInstance = new CitiesRepository(executors, dao);
+                Log.d(TAG, "Made new Repository");
+            }
+        }
+        return sInstance;
+    }
+
+    private CitiesRepository(AppExecutors executors, CitiesDao dao) {
         mCitiesDao = dao;
         mExecutors = executors;
     }
 
     public void addCity(CityEntry cityEntry) {
         Log.d(TAG, "addCity: " + cityEntry);
-        mExecutors.diskIO().execute(() -> {
-            mCitiesDao.insert(cityEntry);
+        mExecutors.diskIO().execute(() -> mCitiesDao.insert(cityEntry));
+    }
 
-            List<CityEntry> cities = mCitiesDao.getAll();
-            Log.d(TAG, "addCity: cities: " + cities);
-        });
-
+    public LiveData<List<CityEntry>> getCities() {
+        return mCitiesDao.getAll();
     }
 }

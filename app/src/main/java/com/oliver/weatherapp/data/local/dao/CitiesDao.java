@@ -1,5 +1,6 @@
 package com.oliver.weatherapp.data.local.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface CitiesDao {
 
     @Query("SELECT * FROM cities")
-    List<CityEntry> getAll();
+    LiveData<List<CityEntry>> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(CityEntry city);

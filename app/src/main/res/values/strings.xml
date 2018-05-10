@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <string name="msg_empty_cities_list">Saved cities not found.\nYou can add new city with \'+\' button</string>
 </resources>

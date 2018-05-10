@@ -1,15 +1,21 @@
 package com.oliver.weatherapp.screens.home;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -19,7 +25,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.oliver.weatherapp.Injector;
 import com.oliver.weatherapp.R;
 import com.oliver.weatherapp.data.local.model.CityEntry;
-import com.oliver.weatherapp.data.repositories.CitiesRepository;
+
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -27,6 +34,10 @@ public class CitiesFragment extends Fragment {
 
     private static final int PLACE_PICKER_REQUEST = 111;
     private static final String TAG = CitiesFragment.class.getSimpleName();
+    private CitiesViewModel mViewModel;
+    private TextView mEmptyListMessage;
+    private RecyclerView mCitiesRecyclerView;
+    private CitiesAdapter mCitiesAdapter;
 
     public static CitiesFragment newInstance() {
 
@@ -53,8 +64,40 @@ public class CitiesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        view.findViewById(R.id.fab_add_city).setOnClickListener(this::addCityClick);
+        initViewModel();
 
+        initUI(view);
+    }
+
+    private void initUI(@NonNull View view) {
+        view.findViewById(R.id.fab_add_city).setOnClickListener(this::addCityClick);
+        mEmptyListMessage = view.findViewById(R.id.tv_empty_list_message);
+        mCitiesRecyclerView = view.findViewById(R.id.recycler_view_cities);
+
+        initRecyclerView();
+    }
+
+    private void initRecyclerView() {
+        mCitiesAdapter = new CitiesAdapter(getContext());
+
+        mCitiesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mCitiesRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.HORIZONTAL));
+        mCitiesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        mCitiesRecyclerView.setAdapter(mCitiesAdapter);
+    }
+
+    private void initViewModel() {
+        // Get the ViewModel from the factory
+        CitiesViewModelFactory factory = Injector.provideCitiesViewModelFactory(getContext().getApplicationContext());
+        mViewModel = ViewModelProviders.of(this, factory).get(CitiesViewModel.class);
+        mViewModel.getCities().observe(this, this::onCitiesUpdated);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // TODO: 5/10/18 implement save instance state
     }
 
     private void addCityClick(View view) {
@@ -75,7 +118,6 @@ public class CitiesFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(getActivity(), data);
                 handleSelectedPlace(place);
-
             }
         }
     }
@@ -88,9 +130,28 @@ public class CitiesFragment extends Fragment {
         Log.d(TAG, "handleSelectedPlace: name: " + name + " address " + address + " latlng: " + latLng);
 
         CityEntry cityEntry = new CityEntry(name, address, latLng.latitude, latLng. longitude);
-        // TODO: 5/10/18 remove this from here, should be in viewModel
-        CitiesRepository repository = Injector.provideCitiesRepository(getContext().getApplicationContext());
+        mViewModel.addCity(cityEntry);
+    }
 
-        repository.addCity(cityEntry);
+    private void onCitiesUpdated(List<CityEntry> cities) {
+        Log.d(TAG, "onCitiesUpdated: cities: " + cities);
+        if (cities == null || cities.isEmpty()) {
+            showEmptyListResult();
+        } else {
+            displayCities(cities);
+        }
+    }
+
+    private void showEmptyListResult() {
+        mEmptyListMessage.setVisibility(View.VISIBLE);
+        mCitiesRecyclerView.setVisibility(View.INVISIBLE);
+    }
+
+    // TODO: 5/10/18 newest should be first, implement diffutils
+    private void displayCities(List<CityEntry> cities) {
+        mEmptyListMessage.setVisibility(View.INVISIBLE);
+        mCitiesRecyclerView.setVisibility(View.VISIBLE);
+
+        mCitiesAdapter.setCities(cities);
     }
 }

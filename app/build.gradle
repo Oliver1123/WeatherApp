@@ -10,6 +10,8 @@ android {
         versionCode VERSION_CODE
         versionName VERSION_NAME
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -70,6 +72,4 @@ dependencies {
     implementation "android.arch.lifecycle:runtime:$arch_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
     annotationProcessor "android.arch.lifecycle:compiler:$arch_version"
-
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
 }
