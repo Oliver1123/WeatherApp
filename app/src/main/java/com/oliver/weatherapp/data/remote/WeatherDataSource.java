@@ -2,7 +2,6 @@ package com.oliver.weatherapp.data.remote;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -18,36 +17,30 @@ public class WeatherDataSource {
     public static final int NUM_DAYS_FORECAST = 5;
     private static final String TAG = WeatherDataSource.class.getSimpleName();
     private final AppExecutors mExecutors;
-    private final Context mContext;
 
     private static final Object LOCK = new Object();
     private static WeatherDataSource sInstance;
     private final MutableLiveData<WeatherEntry[]> mWeatherLiveData;
 
-    public static WeatherDataSource getInstance(Context context, AppExecutors executors) {
+    public static WeatherDataSource getInstance(AppExecutors executors) {
         Log.d(TAG, "Get the WeatherDataSource");
         if (sInstance == null) {
             synchronized (LOCK) {
-                sInstance = new WeatherDataSource(context, executors);
+                sInstance = new WeatherDataSource(executors);
                 Log.d(TAG, "Made new WeatherDataSource");
             }
         }
         return sInstance;
     }
 
-    private  WeatherDataSource(Context context, AppExecutors executors) {
+    private  WeatherDataSource(AppExecutors executors) {
         mExecutors = executors;
-        mContext = context;
 
         mWeatherLiveData = new MutableLiveData<>();
     }
 
     public LiveData<WeatherEntry[]> getWeather() {
         return mWeatherLiveData;
-    }
-
-    public void startFetchWeatherService(long cityID, double latitude, double longitude) {
-        SyncWeatherService.startSyncWeather(mContext, cityID, latitude, longitude);
     }
 
     public void fetchForecast(long cityID, double latitude, double longitude) {

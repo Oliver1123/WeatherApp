@@ -54,7 +54,7 @@ public class WeatherRepository {
 
     // TODO: 5/11/18 improve this, check if update needed, delete old data
     public LiveData<List<WeatherEntry>> getForecast(long cityID, double latitude, double longitude) {
-        mWeatherDataSource.startFetchWeatherService(cityID, latitude, longitude);
+        mWeatherDataSource.fetchForecast(cityID, latitude, longitude);
         return mWeatherDao.getForecast(cityID);
     }
 }

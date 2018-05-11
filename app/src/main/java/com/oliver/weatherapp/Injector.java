@@ -21,13 +21,13 @@ public abstract class Injector {
     private static WeatherRepository provideWeatherRepository(Context context) {
         WeatherDatabase database = WeatherDatabase.getInstance(context);
         AppExecutors executors = AppExecutors.getInstance();
-        WeatherDataSource dataSource = provideWeatherDataSource(context);
+        WeatherDataSource dataSource = provideWeatherDataSource();
         return WeatherRepository.getInstance(executors, database.weatherDao(), dataSource);
     }
 
-    public static WeatherDataSource provideWeatherDataSource(Context context) {
+    public static WeatherDataSource provideWeatherDataSource() {
         AppExecutors executors = AppExecutors.getInstance();
-        return WeatherDataSource.getInstance(context, executors);
+        return WeatherDataSource.getInstance(executors);
     }
 
     public static CitiesViewModelFactory provideCitiesViewModelFactory(Context context) {
