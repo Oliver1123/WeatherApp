@@ -44,6 +44,7 @@ public class WeatherDataSource {
     }
 
     public void fetchForecast(long cityID, double latitude, double longitude) {
+        Log.d(TAG, "fetchForecast() called with: cityID = [" + cityID + "], (" + latitude + "," + longitude + ")");
         mExecutors.networkIO().execute(() -> {
             try {
 

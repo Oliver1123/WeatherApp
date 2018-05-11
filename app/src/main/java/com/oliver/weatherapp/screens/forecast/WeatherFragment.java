@@ -20,7 +20,6 @@ import com.oliver.weatherapp.Injector;
 import com.oliver.weatherapp.R;
 import com.oliver.weatherapp.data.local.model.CityEntry;
 import com.oliver.weatherapp.data.local.model.WeatherEntry;
-import com.oliver.weatherapp.screens.home.WeatherViewModel;
 
 import java.util.List;
 

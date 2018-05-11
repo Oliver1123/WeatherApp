@@ -21,5 +21,8 @@ public interface WeatherDao {
     void bulkInsert(WeatherEntry... weatherEntries);
 
     @Query("DELETE FROM forecast WHERE date < :date")
-    void deleteOutdated(Date date);
+    void deleteOldWeather(Date date);
+
+    @Query("SELECT COUNT(id) FROM forecast WHERE date >= :date AND cityID = :cityID")
+    int countFutureWeatherForCity(long cityID, Date date);
 }

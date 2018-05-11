@@ -1,4 +1,4 @@
-package com.oliver.weatherapp.screens.home;
+package com.oliver.weatherapp.screens.forecast;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;

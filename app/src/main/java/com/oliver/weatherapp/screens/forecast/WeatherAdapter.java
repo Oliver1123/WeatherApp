@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.oliver.weatherapp.R;
 import com.oliver.weatherapp.data.local.model.WeatherEntry;
-import com.oliver.weatherapp.screens.home.WeatherDiffCallback;
 
 import java.util.ArrayList;
 import java.util.List;

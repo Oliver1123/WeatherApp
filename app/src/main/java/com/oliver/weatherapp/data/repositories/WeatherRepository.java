@@ -7,9 +7,13 @@ import com.oliver.weatherapp.AppExecutors;
 import com.oliver.weatherapp.data.local.dao.WeatherDao;
 import com.oliver.weatherapp.data.local.model.WeatherEntry;
 import com.oliver.weatherapp.data.remote.WeatherDataSource;
+import com.oliver.weatherapp.utils.DateUtils;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WeatherRepository {
 
@@ -20,6 +24,7 @@ public class WeatherRepository {
     private static final Object LOCK = new Object();
     private static WeatherRepository sInstance;
     private final WeatherDataSource mWeatherDataSource;
+    private Set<Long> mInitializedForCity = new HashSet<>();
 
     public static WeatherRepository getInstance(AppExecutors executors,
                                                 WeatherDao dao,
@@ -47,14 +52,44 @@ public class WeatherRepository {
         mWeatherDataSource.getWeather().observeForever(weatherEntries ->
                 mExecutors.diskIO().execute(() -> {
                     Log.d(TAG, "observeNewWeatherData: " + Arrays.toString(weatherEntries));
+                    deleteOldData();
+
                     mWeatherDao.bulkInsert(weatherEntries);
                 }));
 
     }
 
-    // TODO: 5/11/18 improve this, check if update needed, delete old data
+    private void deleteOldData() {
+        Date today = DateUtils.getNormalizedUtcDateForToday();
+        Log.d(TAG, "deleteOldData: today: " + today);
+        mWeatherDao.deleteOldWeather(today);
+    }
+
     public LiveData<List<WeatherEntry>> getForecast(long cityID, double latitude, double longitude) {
-        mWeatherDataSource.fetchForecast(cityID, latitude, longitude);
+
+        initialize(cityID, latitude, longitude);
+//        mWeatherDataSource.fetchForecast(cityID, latitude, longitude);
         return mWeatherDao.getForecast(cityID);
+    }
+
+
+    private void initialize(long cityID, double latitude, double longitude) {
+        // initialize only once for instance and for city
+        if (mInitializedForCity.contains(cityID)) return;
+        mInitializedForCity.add(cityID);
+
+        mExecutors.diskIO().execute(() -> {
+            if (isFetchNeeded(cityID)) {
+                mWeatherDataSource.fetchForecast(cityID, latitude, longitude);
+            }
+        });
+    }
+
+    private boolean isFetchNeeded(long cityID) {
+        Date today = DateUtils.getNormalizedUtcDateForToday();
+        int count = mWeatherDao.countFutureWeatherForCity(cityID, today);
+        boolean isFetchNeeded = count < WeatherDataSource.NUM_DAYS_FORECAST;
+        Log.d(TAG, "isFetchNeeded: " + isFetchNeeded + " today: " + today);
+        return isFetchNeeded;
     }
 }

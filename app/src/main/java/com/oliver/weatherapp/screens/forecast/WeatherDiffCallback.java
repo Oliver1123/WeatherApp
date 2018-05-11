@@ -1,4 +1,4 @@
-package com.oliver.weatherapp.screens.home;
+package com.oliver.weatherapp.screens.forecast;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

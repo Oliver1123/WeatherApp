@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.oliver.weatherapp.data.local.model.CityEntry;
 import com.oliver.weatherapp.data.repositories.WeatherRepository;
-import com.oliver.weatherapp.screens.home.WeatherViewModel;
 
 public class WeatherViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
