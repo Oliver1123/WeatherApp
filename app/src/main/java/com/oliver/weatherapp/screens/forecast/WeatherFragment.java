@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.oliver.weatherapp.Injector;
 import com.oliver.weatherapp.R;
+import com.oliver.weatherapp.data.local.model.CityEntry;
 import com.oliver.weatherapp.data.local.model.WeatherEntry;
 import com.oliver.weatherapp.screens.home.WeatherViewModel;
 
@@ -26,17 +27,17 @@ import java.util.List;
 public class WeatherFragment extends Fragment {
     
     private static final String TAG = WeatherFragment.class.getSimpleName();
-    private static final String ARG_CITY_ID = "ARG_CITY_ID";
+    private static final String ARG_CITY = "ARG_CITY";
 
     private WeatherViewModel mViewModel;
     private TextView mEmptyListMessage;
     private RecyclerView mWeatherRecyclerView;
     private WeatherAdapter mWeatherAdapter;
 
-    public static WeatherFragment newInstance(long cityID) {
+    public static WeatherFragment newInstance(CityEntry city) {
 
         Bundle args = new Bundle();
-        args.putLong(ARG_CITY_ID, cityID);
+        args.putParcelable(ARG_CITY, city);
         WeatherFragment fragment = new WeatherFragment();
         fragment.setArguments(args);
         return fragment;
@@ -82,8 +83,8 @@ public class WeatherFragment extends Fragment {
 
     private void initViewModel() {
         // Get the ViewModel from the factory
-        long cityID = getArguments().getLong(ARG_CITY_ID);
-        WeatherViewModelFactory factory = Injector.provideWeatherViewModelFactory(getContext().getApplicationContext(), cityID);
+        CityEntry city = getArguments().getParcelable(ARG_CITY);
+        WeatherViewModelFactory factory = Injector.provideWeatherViewModelFactory(getContext().getApplicationContext(), city);
         mViewModel = ViewModelProviders.of(this, factory).get(WeatherViewModel.class);
         mViewModel.getForecast().observe(this, this::onWeatherUpdated);
     }

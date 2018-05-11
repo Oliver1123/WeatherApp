@@ -1,12 +1,12 @@
 package com.oliver.weatherapp.data.remote;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.oliver.weatherapp.AppExecutors;
-import com.oliver.weatherapp.data.local.WeatherDatabase;
-import com.oliver.weatherapp.data.local.dao.WeatherDao;
 import com.oliver.weatherapp.data.local.model.WeatherEntry;
 import com.oliver.weatherapp.data.remote.model.DayWeather;
 import com.oliver.weatherapp.data.remote.model.WeatherResponse;
@@ -22,6 +22,7 @@ public class WeatherDataSource {
 
     private static final Object LOCK = new Object();
     private static WeatherDataSource sInstance;
+    private final MutableLiveData<WeatherEntry[]> mWeatherLiveData;
 
     public static WeatherDataSource getInstance(Context context, AppExecutors executors) {
         Log.d(TAG, "Get the WeatherDataSource");
@@ -37,6 +38,12 @@ public class WeatherDataSource {
     private  WeatherDataSource(Context context, AppExecutors executors) {
         mExecutors = executors;
         mContext = context;
+
+        mWeatherLiveData = new MutableLiveData<>();
+    }
+
+    public LiveData<WeatherEntry[]> getWeather() {
+        return mWeatherLiveData;
     }
 
     public void startFetchWeatherService(long cityID, double latitude, double longitude) {
@@ -53,8 +60,12 @@ public class WeatherDataSource {
                 // Use the URL to retrieve the JSON
                 String jsonWeatherResponse = NetworkUtils.getResponseFromHttpUrl(weatherRequestUrl);
                 Log.d(TAG, "fetchForecast: json: " + jsonWeatherResponse);
-                Gson gson = new Gson();
+
+
+                // TODO: 5/11/18 remove this before release, need to check how it will work on slow connection
                 Thread.sleep(5000);
+                
+                Gson gson = new Gson();
                 WeatherResponse response = gson.fromJson(jsonWeatherResponse, WeatherResponse.class);
 
 
@@ -69,10 +80,7 @@ public class WeatherDataSource {
                         weatherEntries[i] = weatherEntry;
                         Log.d(TAG, "weatherEntry: " + weatherEntry);
                     }
-
-                    // TODO: 5/11/18 establish weather entry inserting
-                    WeatherDao weatherDao = WeatherDatabase.getInstance(mContext).weatherDao();
-                    weatherDao.bulkInsert(weatherEntries);
+                    mWeatherLiveData.postValue(weatherEntries);
                 }
 
 

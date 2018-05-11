@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
+import com.oliver.weatherapp.data.local.model.CityEntry;
 import com.oliver.weatherapp.data.local.model.WeatherEntry;
 import com.oliver.weatherapp.data.repositories.WeatherRepository;
 
@@ -15,10 +16,10 @@ public class WeatherViewModel extends ViewModel {
     private final WeatherRepository mRepository;
     private final LiveData<List<WeatherEntry>> mForecast;
 
-    public WeatherViewModel(WeatherRepository repository, long cityID) {
+    public WeatherViewModel(WeatherRepository repository, CityEntry city) {
         Log.d(TAG, "WeatherViewModel: constructor repository: " + repository);
         mRepository = repository;
-        mForecast = mRepository.getForecast(cityID);
+        mForecast = mRepository.getForecast(city.id, city.longitude, city.latitude);
     }
 
     public LiveData<List<WeatherEntry>> getForecast() {

@@ -4,23 +4,24 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
+import com.oliver.weatherapp.data.local.model.CityEntry;
 import com.oliver.weatherapp.data.repositories.WeatherRepository;
 import com.oliver.weatherapp.screens.home.WeatherViewModel;
 
 public class WeatherViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final WeatherRepository mRepository;
-    private final long mCityID;
+    private final CityEntry mCity;
 
-    public WeatherViewModelFactory(WeatherRepository repository, long cityID) {
+    public WeatherViewModelFactory(WeatherRepository repository, CityEntry cityID) {
         mRepository = repository;
-        mCityID = cityID;
+        mCity = cityID;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         //noinspection unchecked
-        return (T) new WeatherViewModel(mRepository, mCityID);
+        return (T) new WeatherViewModel(mRepository, mCity);
     }
 }

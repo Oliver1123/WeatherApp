@@ -5,9 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.oliver.weatherapp.Injector;
 import com.oliver.weatherapp.R;
-import com.oliver.weatherapp.data.remote.WeatherDataSource;
+import com.oliver.weatherapp.data.local.model.CityEntry;
 import com.oliver.weatherapp.screens.forecast.WeatherFragment;
 import com.oliver.weatherapp.screens.home.CitiesFragment;
 
@@ -19,13 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setFragment(getWeatherFragment());
-        // TODO: 5/11/18 remove this after forecast fetch process will be established
-        tmp();
-    }
 
-    private void tmp() {
-        WeatherDataSource dataSource = Injector.provideWeatherDataSource(this.getApplicationContext());
-        dataSource.startFetchWeatherService(0, 0, 0);
     }
 
     private void setFragment(Fragment fragment) {
@@ -43,11 +36,12 @@ public class MainActivity extends AppCompatActivity {
         return fragment;
     }
 
+    // TODO: 5/11/18 implement fragments replace
     private WeatherFragment getWeatherFragment() {
         WeatherFragment fragment =
                 (WeatherFragment) getSupportFragmentManager().findFragmentById(R.id.container);
         if (fragment == null) {
-            fragment = WeatherFragment.newInstance(0);
+            fragment = WeatherFragment.newInstance(new CityEntry("cityName", "cityaddress", 0, 0));
         }
         return fragment;
     }
