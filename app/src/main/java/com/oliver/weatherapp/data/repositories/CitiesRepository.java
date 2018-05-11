@@ -19,11 +19,11 @@ public class CitiesRepository {
     private static CitiesRepository sInstance;
 
     public static CitiesRepository getInstance(AppExecutors executors, CitiesDao dao) {
-        Log.d(TAG, "Get the repository");
+        Log.d(TAG, "Get the CitiesRepository");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new CitiesRepository(executors, dao);
-                Log.d(TAG, "Made new Repository");
+                Log.d(TAG, "Made new CitiesRepository");
             }
         }
         return sInstance;

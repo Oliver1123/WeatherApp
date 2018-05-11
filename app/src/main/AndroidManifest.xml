@@ -17,6 +17,11 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".data.remote.SyncWeatherService"
+            android:exported="false">
+        </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDC3hgf0gS9PnTdYbPmF2wSf1WYUP46KZk"/>

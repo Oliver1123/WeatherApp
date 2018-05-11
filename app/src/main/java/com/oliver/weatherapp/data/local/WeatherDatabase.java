@@ -3,13 +3,17 @@ package com.oliver.weatherapp.data.local;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.util.Log;
 
 import com.oliver.weatherapp.data.local.dao.CitiesDao;
+import com.oliver.weatherapp.data.local.dao.WeatherDao;
 import com.oliver.weatherapp.data.local.model.CityEntry;
+import com.oliver.weatherapp.data.local.model.WeatherEntry;
 
-@Database(entities = {CityEntry.class}, version = 1)
+@Database(entities = {CityEntry.class, WeatherEntry.class}, version = 1)
+@TypeConverters(DateConverter.class)
 public abstract class WeatherDatabase extends RoomDatabase {
 
     private static final String LOG_TAG = WeatherDatabase.class.getSimpleName();
@@ -32,7 +36,8 @@ public abstract class WeatherDatabase extends RoomDatabase {
         return sInstance;
     }
 
-    // The associated DAOs for the database
     public abstract CitiesDao citiesDao();
+
+    public abstract WeatherDao weatherDao();
 }
 

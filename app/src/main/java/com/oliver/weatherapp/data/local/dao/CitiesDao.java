@@ -19,6 +19,7 @@ public interface CitiesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(CityEntry city);
 
+    // TODO: 5/11/18 implement cascade delete
     @Query("DELETE FROM cities WHERE id = :id")
     void deleteCity(long id);
 
