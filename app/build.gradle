@@ -29,6 +29,9 @@ android {
     buildTypes {
         all {
             signingConfig signingConfigs.release
+
+            buildConfigField "String", "SERVER_URL", '"http://api.openweathermap.org/data/2.5/forecast"'
+            buildConfigField "String", "API_KEY", '"c7b7f8988712ed045145446d06b3931b"'
         }
         debug {
             shrinkResources = false
@@ -72,4 +75,6 @@ dependencies {
     implementation "android.arch.lifecycle:runtime:$arch_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
     annotationProcessor "android.arch.lifecycle:compiler:$arch_version"
+
+    implementation 'com.google.code.gson:gson:2.8.4'
 }
