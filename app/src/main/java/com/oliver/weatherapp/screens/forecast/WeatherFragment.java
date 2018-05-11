@@ -39,6 +39,7 @@ public class WeatherFragment extends Fragment {
         args.putParcelable(ARG_CITY, city);
         WeatherFragment fragment = new WeatherFragment();
         fragment.setArguments(args);
+        Log.d(TAG, "newInstance: " + fragment);
         return fragment;
     }
 

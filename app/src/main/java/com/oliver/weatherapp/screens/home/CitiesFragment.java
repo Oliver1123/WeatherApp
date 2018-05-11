@@ -2,6 +2,7 @@ package com.oliver.weatherapp.screens.home;
 
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -41,6 +42,8 @@ public class CitiesFragment extends Fragment {
     private RecyclerView mCitiesRecyclerView;
     private CitiesAdapter mCitiesAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
+    private int mCitiesCount = 0;
+    private CitiesFragmentInteractionListener mCallback;
 
     private CitiesAdapter.OnCityClickListener mOnCityClickListener = new CitiesAdapter.OnCityClickListener() {
         @Override
@@ -50,10 +53,9 @@ public class CitiesFragment extends Fragment {
 
         @Override
         public void onItemClick(View view, CityEntry city, int position) {
-
+            mCallback.onCitySelected(city);
         }
     };
-    private int mCitiesCount = 0;
 
     public static CitiesFragment newInstance() {
 
@@ -61,6 +63,7 @@ public class CitiesFragment extends Fragment {
 
         CitiesFragment fragment = new CitiesFragment();
         fragment.setArguments(args);
+        Log.d(TAG, "newInstance: " + fragment);
         return fragment;
     }
 
@@ -68,6 +71,16 @@ public class CitiesFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mCallback = ((CitiesFragmentInteractionListener) context);
+        } catch (ClassCastException exception) {
+            throw new IllegalStateException(context.getClass().getSimpleName() + " must implement " + CitiesFragmentInteractionListener.class.getSimpleName());
+        }
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -200,5 +213,9 @@ public class CitiesFragment extends Fragment {
         }
         mCitiesCount = citiesCount;
         return result;
+    }
+
+    public interface CitiesFragmentInteractionListener {
+        void onCitySelected(CityEntry city);
     }
 }

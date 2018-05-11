@@ -10,39 +10,36 @@ import com.oliver.weatherapp.data.local.model.CityEntry;
 import com.oliver.weatherapp.screens.forecast.WeatherFragment;
 import com.oliver.weatherapp.screens.home.CitiesFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CitiesFragment.CitiesFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setFragment(getWeatherFragment());
-
+        setFragment(restoreFragment(), false);
     }
 
-    private void setFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, fragment);
-        transaction.commit();
-    }
-
-    private CitiesFragment getCitiesFragment() {
-        CitiesFragment fragment =
-                (CitiesFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+    private Fragment restoreFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
         if (fragment == null) {
+            // nothing to restore, display Cities
             fragment = CitiesFragment.newInstance();
         }
         return fragment;
     }
 
-    // TODO: 5/11/18 implement fragments replace
-    private WeatherFragment getWeatherFragment() {
-        WeatherFragment fragment =
-                (WeatherFragment) getSupportFragmentManager().findFragmentById(R.id.container);
-        if (fragment == null) {
-            fragment = WeatherFragment.newInstance(new CityEntry("cityName", "cityaddress", 0, 0));
+    private void setFragment(Fragment fragment, boolean addToBackStack) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        if (addToBackStack) {
+            transaction.addToBackStack(fragment.getClass().getSimpleName());
         }
-        return fragment;
+        transaction.commit();
+    }
+
+    @Override
+    public void onCitySelected(CityEntry city) {
+        setFragment(WeatherFragment.newInstance(city), true);
     }
 }
