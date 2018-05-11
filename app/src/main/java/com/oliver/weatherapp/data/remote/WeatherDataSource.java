@@ -62,7 +62,14 @@ public class WeatherDataSource {
                 Gson gson = new Gson();
                 WeatherResponse response = gson.fromJson(jsonWeatherResponse, WeatherResponse.class);
 
-
+/*
+                forecast return 5 record, but no guarantee that they will be for 5 different days
+                    WeatherEntry{cityId=1, weatherIconId=800, date=Thu May 10 21:00:00 GMT+03:00 2018
+                    WeatherEntry{cityId=1, weatherIconId=800, date=Fri May 11 00:00:00 GMT+03:00 2018
+                    WeatherEntry{cityId=1, weatherIconId=800, date=Fri May 11 03:00:00 GMT+03:00 2018
+                    WeatherEntry{cityId=1, weatherIconId=800, date=Fri May 11 06:00:00 GMT+03:00 2018
+                    WeatherEntry{cityId=1, weatherIconId=800, date=Fri May 11 09:00:00 GMT+03:00 2018
+*/
                 if (response != null && response.dayWeatherList != null) {
                     DayWeatherToWeatherEntryMapper mapper = new DayWeatherToWeatherEntryMapper();
                     List<DayWeather> weatherList = response.dayWeatherList;

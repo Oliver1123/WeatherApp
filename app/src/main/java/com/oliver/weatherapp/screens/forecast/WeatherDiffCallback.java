@@ -30,7 +30,7 @@ public class WeatherDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldData.get(oldItemPosition).id == newData.get(newItemPosition).id;
+        return oldData.get(oldItemPosition).areTheSame(newData.get(newItemPosition));
     }
 
     @Override

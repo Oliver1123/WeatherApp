@@ -23,6 +23,6 @@ public interface WeatherDao {
     @Query("DELETE FROM forecast WHERE date < :date")
     void deleteOldWeather(Date date);
 
-    @Query("SELECT COUNT(id) FROM forecast WHERE date >= :date AND cityID = :cityID")
+    @Query("SELECT COUNT(*) FROM forecast WHERE date >= :date AND cityID = :cityID")
     int countFutureWeatherForCity(long cityID, Date date);
 }

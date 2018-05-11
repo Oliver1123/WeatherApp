@@ -1,24 +1,33 @@
 package com.oliver.weatherapp.data.local.model;
 
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.ForeignKey;
+import android.support.annotation.NonNull;
 
 import java.util.Date;
 
-@Entity(tableName = "forecast")
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
+@Entity(tableName = "forecast",
+        primaryKeys = {"cityID", "date"},
+        foreignKeys = @ForeignKey(entity = CityEntry.class, parentColumns = "id", childColumns = "cityID", onDelete = CASCADE))
 public class WeatherEntry {
 
-    @PrimaryKey(autoGenerate = true)
-    public int id;
     public long cityID;
     public int weatherIconId;
-    public Date date;
+    @NonNull
+    public Date date = new Date(0);
     public double min;
     public double max;
     public double humidity;
     public double wind;
     public double degrees;
     public double rainVolume;
+
+    public boolean areTheSame(WeatherEntry entry) {
+        return cityID == entry.cityID &&
+                date.equals(entry.date);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -35,7 +44,7 @@ public class WeatherEntry {
         if (Double.compare(that.wind, wind) != 0) return false;
         if (Double.compare(that.degrees, degrees) != 0) return false;
         if (Double.compare(that.rainVolume, rainVolume) != 0) return false;
-        return date != null ? date.equals(that.date) : that.date == null;
+        return date.equals(that.date);
     }
 
     @Override
@@ -44,7 +53,7 @@ public class WeatherEntry {
         long temp;
         result = (int) (cityID ^ (cityID >>> 32));
         result = 31 * result + weatherIconId;
-        result = 31 * result + (date != null ? date.hashCode() : 0);
+        result = 31 * result + date.hashCode();
         temp = Double.doubleToLongBits(min);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(max);
@@ -63,8 +72,7 @@ public class WeatherEntry {
     @Override
     public String toString() {
         return "WeatherEntry{" +
-                "id=" + id +
-                ", cityId=" + cityID +
+                "cityId=" + cityID +
                 ", weatherIconId=" + weatherIconId +
                 ", date=" + date +
                 ", min=" + min +

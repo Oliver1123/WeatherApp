@@ -7,7 +7,6 @@ import com.oliver.weatherapp.AppExecutors;
 import com.oliver.weatherapp.data.local.dao.WeatherDao;
 import com.oliver.weatherapp.data.local.model.WeatherEntry;
 import com.oliver.weatherapp.data.remote.WeatherDataSource;
-import com.oliver.weatherapp.utils.DateUtils;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -60,7 +59,7 @@ public class WeatherRepository {
     }
 
     private void deleteOldData() {
-        Date today = DateUtils.getNormalizedUtcDateForToday();
+        Date today = new Date();
         Log.d(TAG, "deleteOldData: today: " + today);
         mWeatherDao.deleteOldWeather(today);
     }
@@ -86,7 +85,7 @@ public class WeatherRepository {
     }
 
     private boolean isFetchNeeded(long cityID) {
-        Date today = DateUtils.getNormalizedUtcDateForToday();
+        Date today = new Date();
         int count = mWeatherDao.countFutureWeatherForCity(cityID, today);
         boolean isFetchNeeded = count < WeatherDataSource.NUM_DAYS_FORECAST;
         Log.d(TAG, "isFetchNeeded: " + isFetchNeeded + " today: " + today);
