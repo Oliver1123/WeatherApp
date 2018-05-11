@@ -33,4 +33,15 @@
         app:layout_anchor="@id/recycler_view_cities"
         app:layout_anchorGravity="bottom|right|end"/>
 
+    <!--logo required by https://developers.google.com/places/android-sdk/attributions?hl=en-->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/iv_google_logo"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+
+        app:srcCompat="@drawable/powered_by_google_light"
+        app:layout_anchor="@id/recycler_view_cities"
+        app:layout_anchorGravity="bottom|left|start"/>
+
 </android.support.design.widget.CoordinatorLayout>
