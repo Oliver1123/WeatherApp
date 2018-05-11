@@ -9,4 +9,5 @@
     <string name="msg_place_saved">Place saved. Now you can get the weather forecast for this place</string>
     <!--                  WEATHER SCREEN                              -->
     <string name="msg_empty_forecast">Sorry, data not available right now</string>
+    <string name="now">Now</string>
 </resources>
