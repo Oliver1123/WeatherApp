@@ -6,4 +6,5 @@
     <string name="msg_city_delete_button_content_description">Delete item button %1$s</string>
     <string name="msg_city_name_content_description">Item name %1$s</string>
     <string name="msg_city_address_content_description">Item address %1$s</string>
+    <string name="msg_place_saved">Place saved. Now you can get the weather forecast for this place</string>
 </resources>
