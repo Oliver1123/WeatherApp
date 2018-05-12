@@ -97,7 +97,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
             weatherIcon.setImageResource(weatherImageResourceId);
 
             long dateInMillis = weatherEntry.date.getTime();
-            String dateString = DateUtils.getFriendlyDateString(dateInMillis);
+            String dateString = DateUtils.getFriendlyDateString(mContext, dateInMillis);
             dateView.setText(dateString);
 
             String description = WeatherUtils.getStringForWeatherCondition(mContext, weatherIconId);
