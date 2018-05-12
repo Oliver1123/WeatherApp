@@ -49,7 +49,10 @@ android {
             aaptOptions.cruncherEnabled = false
         }
         release {
-            minifyEnabled false
+            minifyEnabled true  // shrink
+            useProguard true    // obfuscate
+            shrinkResources = true
+
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
