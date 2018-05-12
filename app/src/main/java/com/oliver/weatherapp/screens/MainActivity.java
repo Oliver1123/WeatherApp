@@ -2,6 +2,7 @@ package com.oliver.weatherapp.screens;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,7 +15,7 @@ import com.oliver.weatherapp.screens.forecast.WeatherFragment;
 import com.oliver.weatherapp.screens.help.HelpFragment;
 import com.oliver.weatherapp.screens.home.CitiesFragment;
 
-public class MainActivity extends AppCompatActivity implements CitiesFragment.CitiesFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements CitiesFragment.CitiesFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +23,10 @@ public class MainActivity extends AppCompatActivity implements CitiesFragment.Ci
         setContentView(R.layout.activity_main);
 
         setFragment(restoreFragment(), false);
+        //Listen for changes in the back stack
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
+        //Handle when activity is recreated like on orientation Change
+        shouldDisplayHomeUp();
     }
 
     private Fragment restoreFragment() {
@@ -73,5 +78,23 @@ public class MainActivity extends AppCompatActivity implements CitiesFragment.Ci
             return fragment.getClass().getSimpleName();
 
         return null;
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        shouldDisplayHomeUp();
+    }
+
+    public void shouldDisplayHomeUp() {
+        //Enable Up button only  if there are entries in the back stack
+        boolean canback = getSupportFragmentManager().getBackStackEntryCount() > 0;
+        getSupportActionBar().setDisplayHomeAsUpEnabled(canback);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        //This method is called when the up button is pressed. Just the pop back stack.
+        getSupportFragmentManager().popBackStack();
+        return true;
     }
 }

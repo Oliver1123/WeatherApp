@@ -13,5 +13,7 @@
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="menu_help">Help</string>
+    <string name="help_screen_title">Help</string>
+    <string name="cities_screen_title">Cities</string>
 
 </resources>

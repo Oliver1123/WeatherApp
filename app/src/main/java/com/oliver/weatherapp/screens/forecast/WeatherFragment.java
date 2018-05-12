@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +34,7 @@ public class WeatherFragment extends Fragment {
     private TextView mEmptyListMessage;
     private RecyclerView mWeatherRecyclerView;
     private WeatherAdapter mWeatherAdapter;
+    private CityEntry mCity;
 
     public static WeatherFragment newInstance(CityEntry city) {
 
@@ -59,16 +62,25 @@ public class WeatherFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mCity = getArguments().getParcelable(ARG_CITY);
         initViewModel();
 
         initUI(view);
     }
 
     private void initUI(@NonNull View view) {
+        initToolbar();
         mEmptyListMessage = view.findViewById(R.id.tv_empty_list_message);
         mWeatherRecyclerView = view.findViewById(R.id.recycler_view_forecast);
 
         initRecyclerView();
+    }
+
+    private void initToolbar() {
+        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null ) {
+            supportActionBar.setTitle(mCity.name);
+        }
     }
 
     private void initRecyclerView() {
@@ -83,8 +95,7 @@ public class WeatherFragment extends Fragment {
 
     private void initViewModel() {
         // Get the ViewModel from the factory
-        CityEntry city = getArguments().getParcelable(ARG_CITY);
-        WeatherViewModelFactory factory = Injector.provideWeatherViewModelFactory(getContext().getApplicationContext(), city);
+        WeatherViewModelFactory factory = Injector.provideWeatherViewModelFactory(getContext().getApplicationContext(), mCity);
         mViewModel = ViewModelProviders.of(this, factory).get(WeatherViewModel.class);
         mViewModel.getForecast().observe(this, this::onWeatherUpdated);
     }
