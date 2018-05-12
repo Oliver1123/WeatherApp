@@ -90,7 +90,6 @@ public class WeatherFragment extends Fragment {
     }
 
     private void onWeatherUpdated(List<WeatherEntry> forecast) {
-        Log.d(TAG, "onWeatherUpdated: Weather: " + forecast);
         if (forecast == null || forecast.isEmpty()) {
             showEmptyListResult();
         } else {

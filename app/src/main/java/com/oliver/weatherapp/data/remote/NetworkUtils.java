@@ -20,19 +20,17 @@ final class NetworkUtils {
 
     private static final String PARAM_API_KEY = "appid";
     private static final String PARAM_UNITS = "units";
-    private static final String PARAM_DAYS = "cnt";
     private static final String PARAM_LATITUDE = "lat";
     private static final String PARAM_LONGITUDE = "lon";
 
 
     //http://api.openweathermap.org/data/2.5/forecast?lat=0&lon=0&appid=c6e381d8c7ff98f0fee43775817cf6ad&units=metric
-    public static URL buildUrl(double latitude, double longitude, int days) {
+    public static URL buildUrl(double latitude, double longitude) {
         Uri weatherQueryUri = Uri.parse(BuildConfig.SERVER_URL).buildUpon()
                 .appendQueryParameter(PARAM_API_KEY, BuildConfig.API_KEY)
                 .appendQueryParameter(PARAM_LATITUDE, Double.toString(latitude))
                 .appendQueryParameter(PARAM_LONGITUDE, Double.toString(longitude))
                 .appendQueryParameter(PARAM_UNITS, units)
-                .appendQueryParameter(PARAM_DAYS, Integer.toString(days))
                 .build();
 
         try {

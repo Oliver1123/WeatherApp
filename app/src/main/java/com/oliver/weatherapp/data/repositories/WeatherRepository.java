@@ -8,7 +8,7 @@ import com.oliver.weatherapp.data.local.dao.WeatherDao;
 import com.oliver.weatherapp.data.local.model.WeatherEntry;
 import com.oliver.weatherapp.data.remote.WeatherDataSource;
 
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +50,7 @@ public class WeatherRepository {
     private void observeNewWeatherData() {
         mWeatherDataSource.getWeather().observeForever(weatherEntries ->
                 mExecutors.diskIO().execute(() -> {
-                    Log.d(TAG, "observeNewWeatherData: " + Arrays.toString(weatherEntries));
+                    Log.d(TAG, "observeNewWeatherData: " + (weatherEntries != null ? weatherEntries.length : 0));
                     deleteOldData();
 
                     mWeatherDao.bulkInsert(weatherEntries);
@@ -84,11 +84,26 @@ public class WeatherRepository {
         });
     }
 
+    /**
+     * Need to update weather information if we don't have weather data for today + 5 days
+     * if we have at least one record - don't update the weather information
+     * @param cityID - id for the city to check cached forecast
+     * @return true if we need to perform data update, false otherwise
+     */
     private boolean isFetchNeeded(long cityID) {
-        Date today = new Date();
-        int count = mWeatherDao.countFutureWeatherForCity(cityID, today);
-        boolean isFetchNeeded = count < WeatherDataSource.NUM_DAYS_FORECAST;
-        Log.d(TAG, "isFetchNeeded: " + isFetchNeeded + " today: " + today);
+        Calendar requiredDate = Calendar.getInstance();
+
+        requiredDate.add(Calendar.DAY_OF_MONTH, 5);
+        requiredDate.set(Calendar.HOUR_OF_DAY, 0);
+        requiredDate.set(Calendar.MINUTE, 0);
+        requiredDate.set(Calendar.SECOND, 0);
+        requiredDate.set(Calendar.MILLISECOND, 0);
+
+        int count = mWeatherDao.countFutureWeatherForCity(cityID, requiredDate.getTime());
+        boolean isFetchNeeded = count == 0;
+        Log.d(TAG, "isFetchNeeded: " + isFetchNeeded +
+                " requiredUpdateDate: " + requiredDate.getTime() +
+                " recordsCount: " + count);
         return isFetchNeeded;
     }
 }
