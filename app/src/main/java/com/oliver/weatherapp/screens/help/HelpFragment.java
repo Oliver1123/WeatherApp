@@ -17,7 +17,7 @@ import com.oliver.weatherapp.R;
 public class HelpFragment extends Fragment {
 
 
-    private static final String HELP_HTML_PAGE_LOCATION = "file:///android_asset/help.html";
+    private static final String HELP_HTML_PAGE_LOCATION = "file:///android_asset/help/index.html";
 
     public static Fragment newInstance() {
         return new HelpFragment();
