@@ -30,6 +30,7 @@ public class WeatherFragment extends Fragment {
     
     private static final String TAG = WeatherFragment.class.getSimpleName();
     private static final String ARG_CITY = "ARG_CITY";
+    private static final String KEY_FIST_VISIBLE_POSITION = "KEY_FIST_VISIBLE_POSITION";
 
     private WeatherViewModel mViewModel;
     private TextView mEmptyListMessage;
@@ -37,6 +38,7 @@ public class WeatherFragment extends Fragment {
     private WeatherAdapter mWeatherAdapter;
     private CityEntry mCity;
     private SwipeRefreshLayout mSwipeContainer;
+    private int mPosition = 0;
 
     public static WeatherFragment newInstance(CityEntry city) {
 
@@ -68,6 +70,7 @@ public class WeatherFragment extends Fragment {
         initViewModel();
 
         initUI(view);
+        restoreState(savedInstanceState);
     }
 
     private void initUI(@NonNull View view) {
@@ -77,10 +80,6 @@ public class WeatherFragment extends Fragment {
         mSwipeContainer = view.findViewById(R.id.swipeContainer);
         mSwipeContainer.setOnRefreshListener(this::refreshWeather);
         initRecyclerView();
-    }
-
-    private void refreshWeather() {
-        mViewModel.refreshWeather();
     }
 
     private void initToolbar() {
@@ -107,6 +106,25 @@ public class WeatherFragment extends Fragment {
         mViewModel.getForecast().observe(this, this::onWeatherUpdated);
     }
 
+    private void restoreState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            mPosition = savedInstanceState.getInt(KEY_FIST_VISIBLE_POSITION, RecyclerView.NO_POSITION);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        int firstVisiblePosition = ((LinearLayoutManager) mWeatherRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        outState.putInt(KEY_FIST_VISIBLE_POSITION, firstVisiblePosition);
+    }
+
+    private void refreshWeather() {
+        mPosition = 0;
+        mViewModel.refreshWeather();
+    }
+
     private void onWeatherUpdated(List<WeatherEntry> forecast) {
         mSwipeContainer.setRefreshing(false);
         if (forecast == null || forecast.isEmpty()) {
@@ -121,12 +139,20 @@ public class WeatherFragment extends Fragment {
         mWeatherRecyclerView.setVisibility(View.INVISIBLE);
     }
 
-    private void displayWeather(@NonNull List<WeatherEntry> Weather) {
+    private void displayWeather(@NonNull List<WeatherEntry> weather) {
         mEmptyListMessage.setVisibility(View.INVISIBLE);
         mWeatherRecyclerView.setVisibility(View.VISIBLE);
 
-        mWeatherAdapter.setForecast(Weather);
+        mWeatherAdapter.setForecast(weather);
 
-        mWeatherRecyclerView.smoothScrollToPosition(0);
+        tryToRestoreScrolledPosition(weather.size());
+    }
+
+
+    private void tryToRestoreScrolledPosition(int itemsCount) {
+        if (mPosition != RecyclerView.NO_POSITION && mPosition < itemsCount) {
+            mWeatherRecyclerView.smoothScrollToPosition(mPosition);
+            mPosition = RecyclerView.NO_POSITION;
+        }
     }
 }
