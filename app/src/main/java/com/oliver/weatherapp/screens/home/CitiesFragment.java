@@ -117,7 +117,7 @@ public class CitiesFragment extends Fragment {
         mCitiesAdapter = new CitiesAdapter(getContext(), mOnCityClickListener);
 
         mCitiesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mCitiesRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.HORIZONTAL));
+        mCitiesRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mCitiesRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mCitiesRecyclerView.setAdapter(mCitiesAdapter);

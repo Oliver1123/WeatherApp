@@ -75,7 +75,7 @@ public class WeatherFragment extends Fragment {
         mWeatherAdapter = new WeatherAdapter(getContext());
 
         mWeatherRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mWeatherRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.HORIZONTAL));
+        mWeatherRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         mWeatherRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mWeatherRecyclerView.setAdapter(mWeatherAdapter);
