@@ -4,8 +4,11 @@
     <dimen name="icon_size">48dp</dimen>
     <dimen name="list_item_padding_vertical">8dp</dimen>
     <dimen name="list_item_padding_horizontal">16dp</dimen>
+
     <dimen name="list_icon_size">48dp</dimen>
+    <dimen name="list_icon_size_big">96dp</dimen>
 
     <dimen name="list_item_date_left_margin">16dp</dimen>
     <dimen name="list_item_date_start_margin">@dimen/list_item_date_left_margin</dimen>
+
 </resources>

@@ -93,7 +93,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
 
         void bind(WeatherEntry weatherEntry) {
             int weatherIconId = weatherEntry.weatherIconId;
-            int weatherImageResourceId = WeatherUtils.getResourceIdForWeatherCondition(weatherIconId);
+            int weatherImageResourceId = WeatherUtils.getSmallArtResourceIdForWeatherCondition(weatherIconId);
             weatherIcon.setImageResource(weatherImageResourceId);
 
             long dateInMillis = weatherEntry.date.getTime();
@@ -137,6 +137,10 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
             super.bind(weatherEntry);
 
             dateView.setText(mContext.getString(R.string.now));
+
+            int weatherIconId = weatherEntry.weatherIconId;
+            int weatherImageResourceId = WeatherUtils.getLargeArtResourceIdForWeatherCondition(weatherIconId);
+            weatherIcon.setImageResource(weatherImageResourceId);
 
             double humidity = weatherEntry.humidity;
             String humidityString = mContext.getString(R.string.format_humidity, humidity);
