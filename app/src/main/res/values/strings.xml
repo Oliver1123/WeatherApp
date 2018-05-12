@@ -8,8 +8,10 @@
     <string name="msg_city_address_content_description">Item address %1$s</string>
     <string name="msg_place_saved">Place saved. Now you can get the weather forecast for this place</string>
     <!--                  WEATHER SCREEN                              -->
-    <string name="msg_empty_forecast">Sorry, data not available right now</string>
+    <string name="msg_empty_forecast">Data not available right now</string>
     <string name="now">Now</string>
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
+    <string name="menu_help">Help</string>
+
 </resources>

@@ -77,6 +77,7 @@ dependencies {
 
     implementation "android.arch.persistence.room:runtime:$room_version"
     implementation "android.arch.lifecycle:reactivestreams:$arch_version"
+    implementation 'com.android.support:support-v4:26.1.0'
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
 
     implementation "android.arch.lifecycle:runtime:$arch_version"
