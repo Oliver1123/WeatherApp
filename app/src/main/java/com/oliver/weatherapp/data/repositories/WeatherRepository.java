@@ -106,4 +106,12 @@ public class WeatherRepository {
                 " recordsCount: " + count);
         return isFetchNeeded;
     }
+
+    public void forceWeatherRefresh(long cityID, double latitude, double longitude) {
+        mExecutors.diskIO().execute(() -> {
+            mWeatherDao.deleteWeatherForCity(cityID);
+            mWeatherDataSource.fetchForecast(cityID, latitude, longitude);
+        });
+
+    }
 }

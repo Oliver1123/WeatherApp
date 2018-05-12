@@ -18,10 +18,10 @@ Full app assignment can be found [here](https://drive.google.com/open?id=0B7krWR
    - pick one of the places nearby
    - search for the location by name
  * Resources and helpers for weather UI representation are used from Sunshine application
+ * Pull to refresh implemented on weather screen, to manually update forecast information
  
 #### What can be added/improved
  - Perform weather request right after city is added to db
- - Add pull to refresh for weather screen
  - Confirmation dialog before delete the city
  - Handle loading state and loading errors
      
