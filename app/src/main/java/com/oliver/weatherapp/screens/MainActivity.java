@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements CitiesFragment.Ci
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
         if (fragment == null) {
             // nothing to restore, display Cities
-            fragment = CitiesFragment.newInstance();
+            fragment = CitiesFragment.Companion.newInstance();
         }
         return fragment;
     }
