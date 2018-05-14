@@ -111,7 +111,9 @@ class CitiesFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        val firstVisiblePosition = (recycler_view_cities.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+        // onSaveInstanceState called after onDestroyView, so view can be null here!!!!
+        val firstVisiblePosition = (recycler_view_cities?.layoutManager as LinearLayoutManager?)?.findFirstVisibleItemPosition() ?: 0
+
         outState.putInt(KEY_FIST_VISIBLE_POSITION, firstVisiblePosition)
     }
 
