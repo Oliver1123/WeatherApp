@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements CitiesFragment.Ci
 
     @Override
     public void onCitySelected(CityEntry city) {
-        setFragment(WeatherFragment.newInstance(city), true);
+        setFragment(WeatherFragment.Companion.newInstance(city), true);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements CitiesFragment.Ci
 
     private void showHelpFragment() {
         if (!TextUtils.equals(HelpFragment.class.getSimpleName(), getCurrentFragmentName())) {
-            setFragment(HelpFragment.newInstance(), true);
+            setFragment(HelpFragment.Companion.newInstance(), true);
         }
     }
 
