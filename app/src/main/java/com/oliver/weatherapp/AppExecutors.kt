@@ -28,6 +28,7 @@ class AppExecutors private constructor(
 
     companion object {
         private val LOCK = Any()
+        @Volatile
         private var sInstance: AppExecutors? = null
 
         fun getInstance(): AppExecutors =

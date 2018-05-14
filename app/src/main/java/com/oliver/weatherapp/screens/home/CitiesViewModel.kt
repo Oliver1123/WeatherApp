@@ -11,7 +11,7 @@ class CitiesViewModel(private val repository: CitiesRepository) : ViewModel() {
 
     init {
         Timber.d("CitiesViewModel: constructor repository: $repository")
-        cities = repository.cities
+        cities = repository.getCities()
     }
 
     fun addCity(cityEntry: CityEntry) {
