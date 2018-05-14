@@ -135,7 +135,7 @@ public class CitiesFragment extends Fragment {
 
     private void initViewModel() {
         // Get the ViewModel from the factory
-        CitiesViewModelFactory factory = Injector.provideCitiesViewModelFactory(getContext().getApplicationContext());
+        CitiesViewModelFactory factory = Injector.INSTANCE.provideCitiesViewModelFactory(getContext().getApplicationContext());
         mViewModel = ViewModelProviders.of(this, factory).get(CitiesViewModel.class);
         mViewModel.getCities().observe(this, this::onCitiesUpdated);
     }

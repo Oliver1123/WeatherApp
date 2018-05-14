@@ -101,7 +101,7 @@ public class WeatherFragment extends Fragment {
 
     private void initViewModel() {
         // Get the ViewModel from the factory
-        WeatherViewModelFactory factory = Injector.provideWeatherViewModelFactory(getContext().getApplicationContext(), mCity);
+        WeatherViewModelFactory factory = Injector.INSTANCE.provideWeatherViewModelFactory(getContext().getApplicationContext(), mCity);
         mViewModel = ViewModelProviders.of(this, factory).get(WeatherViewModel.class);
         mViewModel.getForecast().observe(this, this::onWeatherUpdated);
     }
