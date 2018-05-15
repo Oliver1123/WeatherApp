@@ -85,7 +85,7 @@ class WeatherFragment : BaseFragment() {
 
         selectedCitySharedViewModel = ViewModelProviders.of(activity as MainActivity, factory)
                 .get(SelectedCitySharedViewModel::class.java)
-        selectedCitySharedViewModel.selectedCity.observe(this, Observer {
+        selectedCitySharedViewModel.getSelectedCity().observe(this, Observer {
             it?.let {
                 viewModel.setCity(it)
                 setToolbarTitle(it.name ?: "")

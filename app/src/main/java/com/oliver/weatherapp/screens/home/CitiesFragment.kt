@@ -41,6 +41,8 @@ class CitiesFragment : BaseFragment() {
     private lateinit var selectedCitySharedViewModel: SelectedCitySharedViewModel
 
 
+    private lateinit var callback: CitiesFragmentInteractionListener
+
     private lateinit var rootView: View
     private lateinit var citiesAdapter: CitiesAdapter
     private var listPosition = RecyclerView.NO_POSITION
@@ -55,8 +57,20 @@ class CitiesFragment : BaseFragment() {
         }
 
         override fun onItemClick(view: View, city: CityEntry, position: Int) {
-            selectedCitySharedViewModel.selectedCity.postValue(city)
+            selectedCitySharedViewModel.setCity(city)
+            callback.onCitySelected(city)
         }
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        try {
+            callback = context as CitiesFragmentInteractionListener
+        } catch (exception: ClassCastException) {
+            throw IllegalStateException(context?.javaClass?.simpleName + " must implement " + CitiesFragmentInteractionListener::class.java.simpleName)
+        }
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -196,6 +210,10 @@ class CitiesFragment : BaseFragment() {
 
         this.citiesCount = citiesCount
         return result
+    }
+
+    interface CitiesFragmentInteractionListener {
+        fun onCitySelected(city: CityEntry)
     }
 
     companion object {

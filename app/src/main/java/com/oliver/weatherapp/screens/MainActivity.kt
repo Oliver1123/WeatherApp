@@ -1,6 +1,5 @@
 package com.oliver.weatherapp.screens
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -12,35 +11,25 @@ import com.oliver.weatherapp.screens.base.BaseActivity
 import com.oliver.weatherapp.screens.forecast.WeatherFragment
 import com.oliver.weatherapp.screens.help.HelpFragment
 import com.oliver.weatherapp.screens.home.CitiesFragment
-import com.oliver.weatherapp.utils.getAppComponent
-import com.oliver.weatherapp.utils.getViewModel
-import javax.inject.Inject
 
-class MainActivity : BaseActivity(), FragmentManager.OnBackStackChangedListener {
-    @Inject
-    lateinit var factory: ViewModelFactory
+class MainActivity : BaseActivity(), CitiesFragment.CitiesFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        getAppComponent().inject(this)
+
         if (savedInstanceState == null)
             setFragment(CitiesFragment.newInstance())
         //Listen for changes in the back stack
         supportFragmentManager.addOnBackStackChangedListener(this)
         //Handle when activity is recreated like on orientation Change
         shouldDisplayHomeUp()
-        initViewModel()
     }
 
-    private fun initViewModel() {
-        val viewModel = getViewModel<SelectedCitySharedViewModel>(factory)
-        viewModel.selectedCity.observe(this, Observer { city ->
-            city?.let {
-                if (shouldShowWeatherFragment(city))
-                    setFragment(WeatherFragment.newInstance(), true)
-            }
-        })
+    override fun onCitySelected(city: CityEntry) {
+        if (shouldShowWeatherFragment(city)) {
+            setFragment(WeatherFragment.newInstance(), true)
+        }
     }
 
     // expand for two panel mode
