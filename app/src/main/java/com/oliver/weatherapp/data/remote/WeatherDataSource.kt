@@ -7,7 +7,7 @@ import com.oliver.weatherapp.data.local.model.WeatherEntry
 import com.oliver.weatherapp.data.remote.model.WeatherResponse
 import timber.log.Timber
 
-class WeatherDataSource private constructor(private val mExecutors: AppExecutors) {
+class WeatherDataSource constructor(private val mExecutors: AppExecutors) {
     private val weatherLiveData: MutableLiveData<Array<WeatherEntry>> = MutableLiveData()
 
     fun getWeather() = weatherLiveData
@@ -35,23 +35,6 @@ class WeatherDataSource private constructor(private val mExecutors: AppExecutors
             } catch (e: Exception) {
                 // Server probably invalid
                 e.printStackTrace()
-            }
-        }
-    }
-
-    companion object {
-
-        private val LOCK = Any()
-        @Volatile
-        private var sInstance: WeatherDataSource? = null
-
-        fun getInstance(executors: AppExecutors): WeatherDataSource {
-            Timber.d("Get the WeatherDataSource")
-            return sInstance ?: synchronized(LOCK) {
-                sInstance ?: WeatherDataSource(executors).also {
-                    Timber.d("Made new WeatherDataSource")
-                    sInstance = it
-                }
             }
         }
     }

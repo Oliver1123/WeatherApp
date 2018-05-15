@@ -3,16 +3,16 @@ package com.oliver.weatherapp.screens
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.oliver.weatherapp.R
 import com.oliver.weatherapp.data.local.model.CityEntry
+import com.oliver.weatherapp.screens.base.BaseActivity
 import com.oliver.weatherapp.screens.forecast.WeatherFragment
 import com.oliver.weatherapp.screens.help.HelpFragment
 import com.oliver.weatherapp.screens.home.CitiesFragment
 
-class MainActivity : AppCompatActivity(), CitiesFragment.CitiesFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
+class MainActivity : BaseActivity(), CitiesFragment.CitiesFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

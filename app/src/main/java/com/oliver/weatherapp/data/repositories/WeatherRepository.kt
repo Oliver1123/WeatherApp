@@ -8,7 +8,7 @@ import com.oliver.weatherapp.data.remote.WeatherDataSource
 import timber.log.Timber
 import java.util.*
 
-class WeatherRepository private constructor(
+class WeatherRepository (
         private val executors: AppExecutors,
         private val weatherDao: WeatherDao,
         private val weatherDataSource: WeatherDataSource)
@@ -86,26 +86,6 @@ class WeatherRepository private constructor(
         executors.diskIO().execute {
             weatherDao.deleteWeatherForCity(cityID)
             weatherDataSource.fetchForecast(cityID, latitude, longitude)
-        }
-    }
-
-    companion object {
-        // For Singleton instantiation
-
-        private val LOCK = Any()
-        @Volatile
-        private var sInstance: WeatherRepository? = null
-
-        fun getInstance(executors: AppExecutors,
-                        dao: WeatherDao,
-                        weatherDataSource: WeatherDataSource): WeatherRepository {
-            Timber.d("Get the WeatherRepository")
-            return sInstance ?: synchronized(LOCK) {
-                sInstance ?: WeatherRepository(executors, dao, weatherDataSource).also {
-                    Timber.d("Made new WeatherRepository")
-                    sInstance = it
-                }
-            }
         }
     }
 }

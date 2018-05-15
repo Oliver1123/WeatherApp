@@ -6,7 +6,7 @@ import com.oliver.weatherapp.data.local.dao.CitiesDao
 import com.oliver.weatherapp.data.local.model.CityEntry
 import timber.log.Timber
 
-class CitiesRepository private constructor(
+class CitiesRepository (
         private val executors: AppExecutors,
         private val citiesDao: CitiesDao) {
 
@@ -19,23 +19,5 @@ class CitiesRepository private constructor(
 
     fun deleteCity(city: CityEntry) {
         executors.diskIO().execute { citiesDao.deleteCity(city.id) }
-    }
-
-    companion object {
-        // For Singleton instantiation
-        private val LOCK = Any()
-        @Volatile
-        private var sInstance: CitiesRepository? = null
-
-        fun getInstance(executors: AppExecutors, dao: CitiesDao): CitiesRepository {
-            Timber.d("Get the CitiesRepository")
-            return sInstance ?: synchronized(LOCK) {
-                sInstance ?: CitiesRepository(executors, dao).also {
-                    Timber.d("Made new CitiesRepository")
-                    sInstance = it
-                }
-
-            }
-        }
     }
 }

@@ -5,13 +5,22 @@ import android.os.Looper
 
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
+@Singleton
 class AppExecutors private constructor(
         private val diskIO: Executor,
         private val networkIO: Executor,
         private val mainThread: Executor
 ) {
+    @Inject
+    constructor() : this(
+        Executors.newSingleThreadExecutor(),
+        Executors.newFixedThreadPool(3),
+        MainThreadExecutor()
+    )
 
     fun diskIO(): Executor {
         return diskIO
@@ -23,25 +32,6 @@ class AppExecutors private constructor(
 
     fun networkIO(): Executor {
         return networkIO
-    }
-
-
-    companion object {
-        private val LOCK = Any()
-        @Volatile
-        private var sInstance: AppExecutors? = null
-
-        fun getInstance(): AppExecutors =
-                sInstance ?: synchronized(LOCK) {
-                    sInstance ?: buildExecutors().also { sInstance = it }
-                }
-
-
-        private fun buildExecutors(): AppExecutors {
-            return AppExecutors(Executors.newSingleThreadExecutor(),
-                    Executors.newFixedThreadPool(3),
-                    MainThreadExecutor())
-        }
     }
 
     private class MainThreadExecutor : Executor {

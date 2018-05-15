@@ -2,10 +2,8 @@ package com.oliver.weatherapp.screens.forecast
 
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -14,19 +12,25 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.oliver.weatherapp.Injector
 import com.oliver.weatherapp.R
 import com.oliver.weatherapp.data.local.model.CityEntry
 import com.oliver.weatherapp.data.local.model.WeatherEntry
+import com.oliver.weatherapp.screens.ViewModelFactory
+import com.oliver.weatherapp.screens.base.BaseFragment
+import com.oliver.weatherapp.utils.getAppComponent
+import com.oliver.weatherapp.utils.getViewModel
 import kotlinx.android.synthetic.main.fragment_weather.*
 import timber.log.Timber
+import javax.inject.Inject
 
-class WeatherFragment : Fragment() {
+class WeatherFragment : BaseFragment() {
     private val KEY_FIST_VISIBLE_POSITION = "KEY_FIST_VISIBLE_POSITION"
     private val DEFAULT_POSITION: Int = 0
-
+    @Inject
+    lateinit var factory: ViewModelFactory
     private lateinit var viewModel: WeatherViewModel
     private lateinit var weatherAdapter: WeatherAdapter
+
     private lateinit var city: CityEntry
 
     private var savedPositions = DEFAULT_POSITION
@@ -41,8 +45,10 @@ class WeatherFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        getAppComponent().inject(this)
+
         city = arguments?.getParcelable(ARG_CITY) ?: throw IllegalArgumentException("City should be passed in arguments")
-        initViewModel()
+        initViewModel(city)
 
         initUI(view)
         restoreState(savedInstanceState)
@@ -71,11 +77,12 @@ class WeatherFragment : Fragment() {
         recycler_view_forecast.adapter = weatherAdapter
     }
 
-    private fun initViewModel() {
-        // Get the ViewModel from the factory
-        val factory = Injector.provideWeatherViewModelFactory(context!!.applicationContext, city)
-        viewModel = ViewModelProviders.of(this, factory).get(WeatherViewModel::class.java)
-        viewModel.forecast.observe(this, Observer { this.onWeatherUpdated(it) })
+    private fun initViewModel(city: CityEntry) {
+        viewModel = getViewModel(factory)
+
+        viewModel.forecast.observe(this, Observer { onWeatherUpdated(it) })
+
+        viewModel.setCity(city)
     }
 
 

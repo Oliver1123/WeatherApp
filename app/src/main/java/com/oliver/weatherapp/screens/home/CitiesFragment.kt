@@ -2,13 +2,10 @@ package com.oliver.weatherapp.screens.home
 
 
 import android.app.Activity.RESULT_OK
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -21,13 +18,18 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.Place
 import com.google.android.gms.location.places.ui.PlacePicker
-import com.oliver.weatherapp.Injector
 import com.oliver.weatherapp.R
 import com.oliver.weatherapp.data.local.model.CityEntry
+import com.oliver.weatherapp.screens.ViewModelFactory
+import com.oliver.weatherapp.screens.base.BaseFragment
+import com.oliver.weatherapp.utils.getAppComponent
+import com.oliver.weatherapp.utils.getViewModel
+import com.oliver.weatherapp.utils.observe
 import kotlinx.android.synthetic.main.fragment_cities.*
 import timber.log.Timber
+import javax.inject.Inject
 
-class CitiesFragment : Fragment() {
+class CitiesFragment : BaseFragment() {
     private val PLACE_PICKER_REQUEST = 111
     private val KEY_FIST_VISIBLE_POSITION = "KEY_FIST_VISIBLE_POSITION"
     private lateinit var rootView: View
@@ -37,6 +39,8 @@ class CitiesFragment : Fragment() {
     private var listPosition = RecyclerView.NO_POSITION
     private var citiesCount = 0
     private lateinit var callback: CitiesFragmentInteractionListener
+
+    @Inject lateinit var factory: ViewModelFactory
 
     private val mOnCityClickListener = object : CitiesAdapter.OnCityClickListener {
         override fun onDeleteClick(view: View, city: CityEntry, position: Int) {
@@ -67,6 +71,8 @@ class CitiesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getAppComponent().inject(this)
+
         rootView = view
         initViewModel()
 
@@ -103,9 +109,8 @@ class CitiesFragment : Fragment() {
 
     private fun initViewModel() {
         // Get the ViewModel from the factory
-        val factory = Injector.provideCitiesViewModelFactory(context!!.applicationContext)
-        viewModel = ViewModelProviders.of(this, factory).get(CitiesViewModel::class.java)
-        viewModel.cities.observe(this, Observer(this@CitiesFragment::onCitiesUpdated))
+        viewModel = getViewModel(factory)
+        observe(viewModel.cities, this@CitiesFragment::onCitiesUpdated)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
