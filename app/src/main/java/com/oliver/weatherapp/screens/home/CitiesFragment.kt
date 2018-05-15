@@ -2,6 +2,7 @@ package com.oliver.weatherapp.screens.home
 
 
 import android.app.Activity.RESULT_OK
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -20,6 +21,8 @@ import com.google.android.gms.location.places.Place
 import com.google.android.gms.location.places.ui.PlacePicker
 import com.oliver.weatherapp.R
 import com.oliver.weatherapp.data.local.model.CityEntry
+import com.oliver.weatherapp.screens.MainActivity
+import com.oliver.weatherapp.screens.SelectedCitySharedViewModel
 import com.oliver.weatherapp.screens.ViewModelFactory
 import com.oliver.weatherapp.screens.base.BaseFragment
 import com.oliver.weatherapp.utils.getAppComponent
@@ -32,15 +35,19 @@ import javax.inject.Inject
 class CitiesFragment : BaseFragment() {
     private val PLACE_PICKER_REQUEST = 111
     private val KEY_FIST_VISIBLE_POSITION = "KEY_FIST_VISIBLE_POSITION"
-    private lateinit var rootView: View
-    private lateinit var viewModel: CitiesViewModel
-    private lateinit var citiesAdapter: CitiesAdapter
-
-    private var listPosition = RecyclerView.NO_POSITION
-    private var citiesCount = 0
-    private lateinit var callback: CitiesFragmentInteractionListener
 
     @Inject lateinit var factory: ViewModelFactory
+    private lateinit var viewModel: CitiesViewModel
+    private lateinit var selectedCitySharedViewModel: SelectedCitySharedViewModel
+
+
+    private lateinit var rootView: View
+    private lateinit var citiesAdapter: CitiesAdapter
+    private var listPosition = RecyclerView.NO_POSITION
+    private var citiesCount = 0
+
+
+
 
     private val mOnCityClickListener = object : CitiesAdapter.OnCityClickListener {
         override fun onDeleteClick(view: View, city: CityEntry, position: Int) {
@@ -48,19 +55,8 @@ class CitiesFragment : BaseFragment() {
         }
 
         override fun onItemClick(view: View, city: CityEntry, position: Int) {
-            callback.onCitySelected(city)
+            selectedCitySharedViewModel.selectedCity.postValue(city)
         }
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-
-        try {
-            callback = context as CitiesFragmentInteractionListener
-        } catch (exception: ClassCastException) {
-            throw IllegalStateException(context?.javaClass?.simpleName + " must implement " + CitiesFragmentInteractionListener::class.java.simpleName)
-        }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -111,6 +107,9 @@ class CitiesFragment : BaseFragment() {
         // Get the ViewModel from the factory
         viewModel = getViewModel(factory)
         observe(viewModel.cities, this@CitiesFragment::onCitiesUpdated)
+
+        selectedCitySharedViewModel = ViewModelProviders.of(activity as MainActivity, factory)
+                .get(SelectedCitySharedViewModel::class.java)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -194,11 +193,6 @@ class CitiesFragment : BaseFragment() {
 
         this.citiesCount = citiesCount
         return result
-    }
-
-    // TODO: 5/14/18 try to use shared viewModel 
-    interface CitiesFragmentInteractionListener {
-        fun onCitySelected(city: CityEntry)
     }
 
     companion object {

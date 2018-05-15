@@ -2,6 +2,7 @@ package com.oliver.weatherapp.screens.forecast
 
 
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -13,8 +14,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.oliver.weatherapp.R
-import com.oliver.weatherapp.data.local.model.CityEntry
 import com.oliver.weatherapp.data.local.model.WeatherEntry
+import com.oliver.weatherapp.screens.MainActivity
+import com.oliver.weatherapp.screens.SelectedCitySharedViewModel
 import com.oliver.weatherapp.screens.ViewModelFactory
 import com.oliver.weatherapp.screens.base.BaseFragment
 import com.oliver.weatherapp.utils.getAppComponent
@@ -29,9 +31,10 @@ class WeatherFragment : BaseFragment() {
     @Inject
     lateinit var factory: ViewModelFactory
     private lateinit var viewModel: WeatherViewModel
-    private lateinit var weatherAdapter: WeatherAdapter
+    private lateinit var selectedCitySharedViewModel: SelectedCitySharedViewModel
 
-    private lateinit var city: CityEntry
+
+    private lateinit var weatherAdapter: WeatherAdapter
 
     private var savedPositions = DEFAULT_POSITION
 
@@ -47,23 +50,21 @@ class WeatherFragment : BaseFragment() {
 
         getAppComponent().inject(this)
 
-        city = arguments?.getParcelable(ARG_CITY) ?: throw IllegalArgumentException("City should be passed in arguments")
-        initViewModel(city)
+        initViewModel()
 
         initUI(view)
         restoreState(savedInstanceState)
     }
 
     private fun initUI(view: View) {
-        initToolbar()
         swipeContainer.setOnRefreshListener { this.refreshWeather() }
         initRecyclerView(view.context)
     }
 
-    private fun initToolbar() {
+    private fun setToolbarTitle(title: String) {
         val supportActionBar = (activity as AppCompatActivity).supportActionBar
 
-        supportActionBar?.title = city.name
+        supportActionBar?.title = title
 
     }
 
@@ -77,15 +78,20 @@ class WeatherFragment : BaseFragment() {
         recycler_view_forecast.adapter = weatherAdapter
     }
 
-    private fun initViewModel(city: CityEntry) {
+    private fun initViewModel() {
         viewModel = getViewModel(factory)
 
         viewModel.forecast.observe(this, Observer { onWeatherUpdated(it) })
 
-        viewModel.setCity(city)
+        selectedCitySharedViewModel = ViewModelProviders.of(activity as MainActivity, factory)
+                .get(SelectedCitySharedViewModel::class.java)
+        selectedCitySharedViewModel.selectedCity.observe(this, Observer {
+            it?.let {
+                viewModel.setCity(it)
+                setToolbarTitle(it.name ?: "")
+            }
+        })
     }
-
-
 
     private fun restoreState(savedInstanceState: Bundle?) {
 
@@ -136,12 +142,10 @@ class WeatherFragment : BaseFragment() {
     }
 
     companion object {
-        private const val ARG_CITY = "ARG_CITY"
 
-        fun newInstance(city: CityEntry): WeatherFragment {
+        fun newInstance(): WeatherFragment {
 
             val args = Bundle()
-            args.putParcelable(ARG_CITY, city)
             val fragment = WeatherFragment()
             fragment.arguments = args
             Timber.d( "newInstance: $fragment")

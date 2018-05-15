@@ -5,6 +5,7 @@ import com.oliver.weatherapp.data.di.LocalModule
 import com.oliver.weatherapp.data.di.NetworkModule
 import com.oliver.weatherapp.data.di.RepositoryModule
 import com.oliver.weatherapp.global.App
+import com.oliver.weatherapp.screens.MainActivity
 import com.oliver.weatherapp.screens.forecast.WeatherFragment
 import com.oliver.weatherapp.screens.home.CitiesFragment
 import dagger.BindsInstance
@@ -32,7 +33,7 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
+    fun inject(activity: MainActivity)
     fun inject(fragment: CitiesFragment)
-
     fun inject(fragment: WeatherFragment)
 }

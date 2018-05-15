@@ -1,5 +1,6 @@
 package com.oliver.weatherapp.screens
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -11,18 +12,39 @@ import com.oliver.weatherapp.screens.base.BaseActivity
 import com.oliver.weatherapp.screens.forecast.WeatherFragment
 import com.oliver.weatherapp.screens.help.HelpFragment
 import com.oliver.weatherapp.screens.home.CitiesFragment
+import com.oliver.weatherapp.utils.getAppComponent
+import com.oliver.weatherapp.utils.getViewModel
+import javax.inject.Inject
 
-class MainActivity : BaseActivity(), CitiesFragment.CitiesFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
+class MainActivity : BaseActivity(), FragmentManager.OnBackStackChangedListener {
+    @Inject
+    lateinit var factory: ViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        setFragment(restoreFragment(), false)
+        getAppComponent().inject(this)
+        setFragment(restoreFragment())
         //Listen for changes in the back stack
         supportFragmentManager.addOnBackStackChangedListener(this)
         //Handle when activity is recreated like on orientation Change
         shouldDisplayHomeUp()
+        initViewModel()
+    }
+
+    private fun initViewModel() {
+        val viewModel = getViewModel<SelectedCitySharedViewModel>(factory)
+        viewModel.selectedCity.observe(this, Observer { city ->
+            city?.let {
+                if (shouldShowWeatherFragment(city))
+                    setFragment(WeatherFragment.newInstance(), true)
+            }
+        })
+    }
+
+    // expand for two panel mode
+    private fun shouldShowWeatherFragment(city: CityEntry): Boolean {
+        return WeatherFragment::class.java.simpleName != getCurrentFragmentName()
     }
 
     private fun getCurrentFragmentName(): String? {
@@ -37,17 +59,13 @@ class MainActivity : BaseActivity(), CitiesFragment.CitiesFragmentInteractionLis
         return fragment ?: CitiesFragment.newInstance()
     }
 
-    private fun setFragment(fragment: Fragment, addToBackStack: Boolean) {
+    private fun setFragment(fragment: Fragment, addToBackStack: Boolean = false) {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, fragment)
         if (addToBackStack) {
             transaction.addToBackStack(fragment.javaClass.simpleName)
         }
         transaction.commit()
-    }
-
-    override fun onCitySelected(city: CityEntry) {
-        setFragment(WeatherFragment.newInstance(city), true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
