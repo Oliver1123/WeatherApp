@@ -14,12 +14,4 @@ data class CityEntry(
         var address: String? = null,
         var latitude: Double = 0.toDouble(),
         var longitude: Double = 0.toDouble()
-) : Parcelable {
-
-    constructor(name: String, address: String, latitude: Double, longitude: Double) : this() {
-        this.name = name
-        this.address = address
-        this.latitude = latitude
-        this.longitude = longitude
-    }
-}
+) : Parcelable

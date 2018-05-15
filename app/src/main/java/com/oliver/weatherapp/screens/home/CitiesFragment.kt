@@ -141,11 +141,11 @@ class CitiesFragment : Fragment() {
 
     private fun handleSelectedPlace(place: Place) {
         val name = place.name.toString()
-        val address= place.address?.toString() ?: ""
+        val address= place.address?.toString()
         val latLng = place.latLng
         Timber.d("handleSelectedPlace: name: $name address $address latlng: $latLng")
 
-        val cityEntry = CityEntry(name, address, latLng.latitude, latLng.longitude)
+        val cityEntry = CityEntry(name = name, address =  address, latitude = latLng.latitude, longitude = latLng.longitude)
         viewModel.addCity(cityEntry)
 
         Snackbar.make(view!!, R.string.msg_place_saved, Snackbar.LENGTH_SHORT).show()
