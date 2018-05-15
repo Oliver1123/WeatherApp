@@ -98,11 +98,16 @@ class WeatherFragment : BaseFragment() {
         savedPositions = savedInstanceState?.getInt(KEY_FIST_VISIBLE_POSITION, RecyclerView.NO_POSITION) ?: RecyclerView.NO_POSITION
     }
 
+    // save scrolled position here, because onSaveInstanceState can be triggered after onDestroyView (view can be null)
+    override fun onPause() {
+        super.onPause()
+        savedPositions = (recycler_view_forecast.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        val firstVisiblePosition = (recycler_view_forecast.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-        outState.putInt(KEY_FIST_VISIBLE_POSITION, firstVisiblePosition)
+        outState.putInt(KEY_FIST_VISIBLE_POSITION, savedPositions)
     }
 
     private fun refreshWeather() {

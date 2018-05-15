@@ -112,13 +112,16 @@ class CitiesFragment : BaseFragment() {
                 .get(SelectedCitySharedViewModel::class.java)
     }
 
+    // save scrolled position here, because onSaveInstanceState can be triggered after onDestroyView
+    override fun onPause() {
+        super.onPause()
+        listPosition = (recycler_view_cities.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        // onSaveInstanceState called after onDestroyView, so view can be null here!!!!
-        val firstVisiblePosition = (recycler_view_cities?.layoutManager as LinearLayoutManager?)?.findFirstVisibleItemPosition() ?: 0
-
-        outState.putInt(KEY_FIST_VISIBLE_POSITION, firstVisiblePosition)
+        outState.putInt(KEY_FIST_VISIBLE_POSITION, listPosition)
     }
 
     private fun addCityClick(view: View) {

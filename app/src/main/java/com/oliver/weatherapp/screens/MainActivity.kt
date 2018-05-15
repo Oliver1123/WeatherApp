@@ -24,7 +24,8 @@ class MainActivity : BaseActivity(), FragmentManager.OnBackStackChangedListener 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         getAppComponent().inject(this)
-        setFragment(restoreFragment())
+        if (savedInstanceState == null)
+            setFragment(CitiesFragment.newInstance())
         //Listen for changes in the back stack
         supportFragmentManager.addOnBackStackChangedListener(this)
         //Handle when activity is recreated like on orientation Change
@@ -50,13 +51,6 @@ class MainActivity : BaseActivity(), FragmentManager.OnBackStackChangedListener 
     private fun getCurrentFragmentName(): String? {
         val fragment = supportFragmentManager.findFragmentById(R.id.container)
         return fragment?.javaClass?.simpleName
-    }
-
-
-    private fun restoreFragment(): Fragment {
-        val fragment: Fragment? = supportFragmentManager.findFragmentById(R.id.container)
-
-        return fragment ?: CitiesFragment.newInstance()
     }
 
     private fun setFragment(fragment: Fragment, addToBackStack: Boolean = false) {
