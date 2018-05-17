@@ -20,7 +20,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.Place
 import com.google.android.gms.location.places.ui.PlacePicker
 import com.oliver.weatherapp.R
-import com.oliver.weatherapp.data.local.model.CityEntry
+import com.oliver.weatherapp.domain.model.City
 import com.oliver.weatherapp.screens.MainActivity
 import com.oliver.weatherapp.screens.SelectedCitySharedViewModel
 import com.oliver.weatherapp.screens.ViewModelFactory
@@ -52,11 +52,11 @@ class CitiesFragment : BaseFragment() {
 
 
     private val mOnCityClickListener = object : CitiesAdapter.OnCityClickListener {
-        override fun onDeleteClick(view: View, city: CityEntry, position: Int) {
+        override fun onDeleteClick(view: View, city: City, position: Int) {
             viewModel.deleteCity(city)
         }
 
-        override fun onItemClick(view: View, city: CityEntry, position: Int) {
+        override fun onItemClick(view: View, city: City, position: Int) {
             selectedCitySharedViewModel.setCity(city)
             callback.onCitySelected(city)
         }
@@ -120,7 +120,7 @@ class CitiesFragment : BaseFragment() {
     private fun initViewModel() {
         // Get the ViewModel from the factory
         viewModel = getViewModel(factory)
-        observe(viewModel.cities, this@CitiesFragment::onCitiesUpdated)
+        observe(viewModel.getCities(), this@CitiesFragment::onCitiesUpdated)
 
         selectedCitySharedViewModel = ViewModelProviders.of(activity as MainActivity, factory)
                 .get(SelectedCitySharedViewModel::class.java)
@@ -166,13 +166,13 @@ class CitiesFragment : BaseFragment() {
         val latLng = place.latLng
         Timber.d("handleSelectedPlace: name: $name address $address latlng: $latLng")
 
-        val cityEntry = CityEntry(name = name, address =  address, latitude = latLng.latitude, longitude = latLng.longitude)
-        viewModel.addCity(cityEntry)
+        val city = City(name, address, latLng.latitude, latLng.longitude)
+        viewModel.addCity(city)
 
         Snackbar.make(view!!, R.string.msg_place_saved, Snackbar.LENGTH_SHORT).show()
     }
 
-    private fun onCitiesUpdated(cities: List<CityEntry>?) {
+    private fun onCitiesUpdated(cities: List<City>?) {
         Timber.d("onCitiesUpdated: cities: $cities")
         if (cities == null || cities.isEmpty()) {
             showEmptyListResult()
@@ -186,7 +186,7 @@ class CitiesFragment : BaseFragment() {
         recycler_view_cities.visibility = View.INVISIBLE
     }
 
-    private fun displayCities(cities: List<CityEntry>) {
+    private fun displayCities(cities: List<City>) {
         tv_empty_list_message.visibility = View.INVISIBLE
         recycler_view_cities.visibility = View.VISIBLE
 
@@ -213,7 +213,7 @@ class CitiesFragment : BaseFragment() {
     }
 
     interface CitiesFragmentInteractionListener {
-        fun onCitySelected(city: CityEntry)
+        fun onCitySelected(city: City)
     }
 
     companion object {

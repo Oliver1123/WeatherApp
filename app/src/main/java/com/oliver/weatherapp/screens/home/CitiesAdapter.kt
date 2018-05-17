@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.oliver.weatherapp.R
-import com.oliver.weatherapp.data.local.model.CityEntry
+import com.oliver.weatherapp.domain.model.City
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_city.*
 import java.util.*
@@ -17,10 +17,10 @@ class CitiesAdapter(
         private val callback: OnCityClickListener
 ) : RecyclerView.Adapter<CitiesAdapter.ViewHolder>() {
 
-    private val cities = ArrayList<CityEntry>()
+    private val cities = ArrayList<City>()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
-    fun setCities(cities: List<CityEntry>) {
+    fun setCities(cities: List<City>) {
         val diffResult = DiffUtil.calculateDiff(CitiesDiffCallback(this.cities, cities))
         diffResult.dispatchUpdatesTo(this)
 
@@ -59,21 +59,21 @@ class CitiesAdapter(
         }
 
 
-        fun bind(cityEntry: CityEntry) {
-            tv_city_name.text = cityEntry.name
-            tv_city_name.contentDescription = context.getString(R.string.msg_city_name_content_description, cityEntry.name)
+        fun bind(city: City) {
+            tv_city_name.text = city.name
+            tv_city_name.contentDescription = context.getString(R.string.msg_city_name_content_description, city.name)
 
-            tv_city_address.text = cityEntry.address
-            tv_city_address.contentDescription = context.getString(R.string.msg_city_address_content_description, cityEntry.address)
+            tv_city_address.text = city.address
+            tv_city_address.contentDescription = context.getString(R.string.msg_city_address_content_description, city.address)
 
             ic_delete_city.contentDescription = context
-                    .getString(R.string.msg_city_delete_button_content_description, cityEntry.name)
+                    .getString(R.string.msg_city_delete_button_content_description, city.name)
         }
     }
 
     interface OnCityClickListener {
-        fun onDeleteClick(view: View, city: CityEntry, position: Int)
-        fun onItemClick(view: View, city: CityEntry, position: Int)
+        fun onDeleteClick(view: View, city: City, position: Int)
+        fun onItemClick(view: View, city: City, position: Int)
     }
 
 }

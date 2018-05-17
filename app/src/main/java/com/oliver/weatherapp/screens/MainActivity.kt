@@ -6,11 +6,12 @@ import android.support.v4.app.FragmentManager
 import android.view.Menu
 import android.view.MenuItem
 import com.oliver.weatherapp.R
-import com.oliver.weatherapp.data.local.model.CityEntry
+import com.oliver.weatherapp.domain.model.City
 import com.oliver.weatherapp.screens.base.BaseActivity
 import com.oliver.weatherapp.screens.forecast.WeatherFragment
 import com.oliver.weatherapp.screens.help.HelpFragment
 import com.oliver.weatherapp.screens.home.CitiesFragment
+import timber.log.Timber
 
 class MainActivity : BaseActivity(), CitiesFragment.CitiesFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
 
@@ -26,20 +27,16 @@ class MainActivity : BaseActivity(), CitiesFragment.CitiesFragmentInteractionLis
         shouldDisplayHomeUp()
     }
 
-    override fun onCitySelected(city: CityEntry) {
+    override fun onCitySelected(city: City) {
+        Timber.d("onCitySelected: city: $city")
         if (shouldShowWeatherFragment(city)) {
             setFragment(WeatherFragment.newInstance(), true)
         }
     }
 
     // expand for two panel mode
-    private fun shouldShowWeatherFragment(city: CityEntry): Boolean {
-        return WeatherFragment::class.java.simpleName != getCurrentFragmentName()
-    }
-
-    private fun getCurrentFragmentName(): String? {
-        val fragment = supportFragmentManager.findFragmentById(R.id.container)
-        return fragment?.javaClass?.simpleName
+    private fun shouldShowWeatherFragment(city: City): Boolean {
+        return getCurrentFragment() !is WeatherFragment
     }
 
     private fun setFragment(fragment: Fragment, addToBackStack: Boolean = false) {
@@ -65,9 +62,13 @@ class MainActivity : BaseActivity(), CitiesFragment.CitiesFragmentInteractionLis
     }
 
     private fun showHelpFragment() {
-        if (HelpFragment::class.java.simpleName != getCurrentFragmentName()) {
+        if (getCurrentFragment() !is HelpFragment) {
             setFragment(HelpFragment.newInstance(), true)
         }
+    }
+
+    private fun getCurrentFragment(): Fragment? {
+        return supportFragmentManager.findFragmentById(R.id.container)
     }
 
     override fun onBackStackChanged() {

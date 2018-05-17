@@ -1,11 +1,9 @@
 package com.oliver.weatherapp.data.local.model
 
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
-import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
 
-@Parcelize
 @Entity(tableName = "cities")
 data class CityEntry(
         @PrimaryKey(autoGenerate = true)
@@ -14,4 +12,8 @@ data class CityEntry(
         var address: String? = null,
         var latitude: Double = 0.toDouble(),
         var longitude: Double = 0.toDouble()
-) : Parcelable
+) {
+    @Ignore
+    constructor(name: String?, address: String?, latitude: Double, longitude: Double) :
+            this(id = 0, name = name, address = address, latitude = latitude, longitude = longitude)
+}

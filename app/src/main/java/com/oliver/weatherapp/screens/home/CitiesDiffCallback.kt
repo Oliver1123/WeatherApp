@@ -2,11 +2,11 @@ package com.oliver.weatherapp.screens.home
 
 import android.support.v7.util.DiffUtil
 
-import com.oliver.weatherapp.data.local.model.CityEntry
+import com.oliver.weatherapp.domain.model.City
 
 class CitiesDiffCallback(
-        private val oldData: List<CityEntry>,
-        private val newData: List<CityEntry>
+        private val oldData: List<City>,
+        private val newData: List<City>
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize(): Int {
