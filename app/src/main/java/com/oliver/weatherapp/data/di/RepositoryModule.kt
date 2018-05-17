@@ -5,8 +5,9 @@ import com.oliver.weatherapp.data.local.dao.CitiesDao
 import com.oliver.weatherapp.data.local.dao.WeatherDao
 import com.oliver.weatherapp.data.remote.WeatherDataSource
 import com.oliver.weatherapp.data.repositories.CitiesRepositoryImpl
-import com.oliver.weatherapp.data.repositories.WeatherRepository
+import com.oliver.weatherapp.data.repositories.WeatherRepositoryImpl
 import com.oliver.weatherapp.domain.repositories.CitiesRepository
+import com.oliver.weatherapp.domain.repositories.WeatherRepository
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -23,6 +24,6 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun provideWeatherRepository(executors: AppExecutors, weatherDao: WeatherDao, dataSource: WeatherDataSource): WeatherRepository {
-        return WeatherRepository(executors, weatherDao, dataSource)
+        return WeatherRepositoryImpl(executors, weatherDao, dataSource)
     }
 }

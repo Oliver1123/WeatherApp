@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.oliver.weatherapp.R
-import com.oliver.weatherapp.data.local.model.WeatherEntry
+import com.oliver.weatherapp.domain.model.WeatherItem
 import com.oliver.weatherapp.utils.DateUtils
 import com.oliver.weatherapp.utils.WeatherUtils
 import kotlinx.android.extensions.LayoutContainer
@@ -17,13 +17,13 @@ import java.util.*
 
 class WeatherAdapter(context: Context) : RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
 
-    private val weatherEntries = ArrayList<WeatherEntry>()
+    private val weatherEntries: MutableList<WeatherItem> = ArrayList()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     private val TYPE_NOW = 0
     private val TYPE_WEATHER_ITEM = 1
 
-    fun setForecast(entries: List<WeatherEntry>) {
+    fun setForecast(entries: List<WeatherItem>) {
         val diffResult = DiffUtil.calculateDiff(WeatherDiffCallback(this.weatherEntries, entries))
         diffResult.dispatchUpdatesTo(this)
 
@@ -69,12 +69,12 @@ class WeatherAdapter(context: Context) : RecyclerView.Adapter<WeatherAdapter.Vie
         protected val context: Context = itemView.context
 
 
-        internal open fun bind(weatherEntry: WeatherEntry) {
-            val weatherIconId = weatherEntry.weatherIconId
+        internal open fun bind(item: WeatherItem) {
+            val weatherIconId = item.weatherIconId
             val weatherImageResourceId = WeatherUtils.getSmallArtResourceIdForWeatherCondition(weatherIconId)
             weatherIcon.setImageResource(weatherImageResourceId)
 
-            val dateInMillis = weatherEntry.date.time
+            val dateInMillis = item.date.time
             val dateString = DateUtils.getFriendlyDateString(context, dateInMillis)
             dateView.text = dateString
 
@@ -83,13 +83,13 @@ class WeatherAdapter(context: Context) : RecyclerView.Adapter<WeatherAdapter.Vie
             this.descriptionView.text = description
             this.descriptionView.contentDescription = descriptionA11y
 
-            val highInCelsius = weatherEntry.max
+            val highInCelsius = item.max
             val highString = WeatherUtils.formatTemperature(context, highInCelsius)
             val highA11y = context.getString(R.string.a11y_high_temp, highString)
             maxTemperatureView.text = highString
             maxTemperatureView.contentDescription = highA11y
 
-            val lowInCelsius = weatherEntry.min
+            val lowInCelsius = item.min
             val lowString = WeatherUtils.formatTemperature(context, lowInCelsius)
             val lowA11y = context.getString(R.string.a11y_low_temp, lowString)
             minTemperatureView.text = lowString
@@ -103,30 +103,30 @@ class WeatherAdapter(context: Context) : RecyclerView.Adapter<WeatherAdapter.Vie
         private val windView: TextView = itemView.findViewById(R.id.wind)
         private val rainVolumeView: TextView = itemView.findViewById(R.id.rainVolume)
 
-        override fun bind(weatherEntry: WeatherEntry) {
-            super.bind(weatherEntry)
+        override fun bind(item: WeatherItem) {
+            super.bind(item)
 
             dateView.text = context.getString(R.string.now)
 
-            val weatherIconId = weatherEntry.weatherIconId
+            val weatherIconId = item.weatherIconId
             val weatherImageResourceId = WeatherUtils.getLargeArtResourceIdForWeatherCondition(weatherIconId)
             weatherIcon.setImageResource(weatherImageResourceId)
 
-            val humidity = weatherEntry.humidity
+            val humidity = item.humidity
             val humidityString = context.getString(R.string.format_humidity, humidity)
             val humidityA11y = context.getString(R.string.a11y_humidity, humidityString)
             humidityView.text = humidityA11y
             humidityView.contentDescription = humidityA11y
 
 
-            val windSpeed = weatherEntry.wind
-            val windDirection = weatherEntry.degrees
+            val windSpeed = item.wind
+            val windDirection = item.degrees
             val windString = WeatherUtils.getFormattedWind(context, windSpeed, windDirection)
             val windA11y = context.getString(R.string.a11y_wind, windString)
             windView.text = windA11y
             windView.contentDescription = windA11y
 
-            val rain = weatherEntry.rainVolume
+            val rain = item.rainVolume
             val rainString = context.getString(R.string.format_rain, rain)
             val rainA11y = context.getString(R.string.a11y_rain, rainString)
             rainVolumeView.text = rainA11y

@@ -1,18 +1,18 @@
 package com.oliver.weatherapp.data.local.dao
 
-import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 import com.oliver.weatherapp.data.local.model.WeatherEntry
+import io.reactivex.Flowable
 import java.util.*
 
 @Dao
 interface WeatherDao {
 
     @Query("SELECT * FROM forecast WHERE cityID = :cityID")
-    fun getForecast(cityID: Long): LiveData<List<WeatherEntry>>
+    fun getForecast(cityID: Long): Flowable<List<WeatherEntry>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun bulkInsert(vararg weatherEntries: WeatherEntry)

@@ -8,7 +8,10 @@ class CityEntityToCityMapper : Function<List<CityEntry>, List<City>> {
 
     override fun apply(cities: List<CityEntry>): List<City> {
         return cities.map {
-            City(it.id, it.name, it.address, it.latitude, it.longitude)
+            it.run {
+                City(id, name, address, latitude, longitude)
+            }
+
         }
     }
 

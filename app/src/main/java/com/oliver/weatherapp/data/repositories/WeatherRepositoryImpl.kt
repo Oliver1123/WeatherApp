@@ -1,18 +1,21 @@
 package com.oliver.weatherapp.data.repositories
 
-import android.arch.lifecycle.LiveData
 import com.oliver.weatherapp.AppExecutors
 import com.oliver.weatherapp.data.local.dao.WeatherDao
-import com.oliver.weatherapp.data.local.model.WeatherEntry
+import com.oliver.weatherapp.data.local.mapper.WeatherEntryToWeatherMapper
 import com.oliver.weatherapp.data.remote.WeatherDataSource
+import com.oliver.weatherapp.domain.model.WeatherItem
+import com.oliver.weatherapp.domain.repositories.WeatherRepository
+import io.reactivex.Flowable
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.*
 
-class WeatherRepository (
+class WeatherRepositoryImpl(
         private val executors: AppExecutors,
         private val weatherDao: WeatherDao,
-        private val weatherDataSource: WeatherDataSource)
-{
+        private val weatherDataSource: WeatherDataSource
+) : WeatherRepository {
     private val isInitializedForCity = HashSet<Long>()
 
     init {
@@ -22,7 +25,7 @@ class WeatherRepository (
     private fun observeNewWeatherData() {
         weatherDataSource.getWeather().observeForever { weatherEntries ->
             executors.diskIO().execute {
-                Timber.d("observeNewWeatherData: ${weatherEntries?.size }")
+                Timber.d("observeNewWeatherData: ${weatherEntries?.size}")
                 deleteOldData()
 
                 weatherEntries?.let {
@@ -39,11 +42,13 @@ class WeatherRepository (
         weatherDao.deleteOldWeather(today)
     }
 
-    fun getForecast(cityID: Long, latitude: Double, longitude: Double): LiveData<List<WeatherEntry>> {
+    override fun getForecast(cityID: Long, latitude: Double, longitude: Double): Flowable<List<WeatherItem>> {
 
         initialize(cityID, latitude, longitude)
         //        weatherDataSource.fetchForecast(cityID, latitude, longitude);
         return weatherDao.getForecast(cityID)
+                .subscribeOn(Schedulers.io())
+                .map(WeatherEntryToWeatherMapper())
     }
 
 
@@ -82,7 +87,7 @@ class WeatherRepository (
         return isFetchNeeded
     }
 
-    fun forceWeatherRefresh(cityID: Long, latitude: Double, longitude: Double) {
+    override fun forceWeatherRefresh(cityID: Long, latitude: Double, longitude: Double) {
         executors.diskIO().execute {
             weatherDao.deleteWeatherForCity(cityID)
             weatherDataSource.fetchForecast(cityID, latitude, longitude)

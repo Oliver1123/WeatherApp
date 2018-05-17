@@ -14,7 +14,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.oliver.weatherapp.R
-import com.oliver.weatherapp.data.local.model.WeatherEntry
+import com.oliver.weatherapp.domain.model.WeatherItem
+
 import com.oliver.weatherapp.screens.MainActivity
 import com.oliver.weatherapp.screens.SelectedCitySharedViewModel
 import com.oliver.weatherapp.screens.ViewModelFactory
@@ -81,7 +82,7 @@ class WeatherFragment : BaseFragment() {
     private fun initViewModel() {
         viewModel = getViewModel(factory)
 
-        viewModel.forecast.observe(this, Observer { onWeatherUpdated(it) })
+        viewModel.getForecast().observe(this, Observer { onWeatherUpdated(it) })
 
         selectedCitySharedViewModel = ViewModelProviders.of(activity as MainActivity, factory)
                 .get(SelectedCitySharedViewModel::class.java)
@@ -115,7 +116,7 @@ class WeatherFragment : BaseFragment() {
         viewModel.refreshWeather()
     }
 
-    private fun onWeatherUpdated(forecast: List<WeatherEntry>?) {
+    private fun onWeatherUpdated(forecast: List<WeatherItem>?) {
         swipeContainer.isRefreshing = false
         if (forecast == null || forecast.isEmpty()) {
             showEmptyListResult()
@@ -129,13 +130,13 @@ class WeatherFragment : BaseFragment() {
         recycler_view_forecast.visibility = View.INVISIBLE
     }
 
-    private fun displayWeather(weather: List<WeatherEntry>) {
+    private fun displayWeather(weatherItem: List<WeatherItem>) {
         tv_empty_list_message.visibility = View.INVISIBLE
         recycler_view_forecast.visibility = View.VISIBLE
 
-        weatherAdapter.setForecast(weather)
+        weatherAdapter.setForecast(weatherItem)
 
-        tryToRestoreScrolledPosition(weather.size)
+        tryToRestoreScrolledPosition(weatherItem.size)
     }
 
 
