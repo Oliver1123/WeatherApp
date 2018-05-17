@@ -41,6 +41,7 @@ android {
         all {
             signingConfig signingConfigs.release
 
+            buildConfigField "String", "BASE_URL", '"http://api.openweathermap.org"'
             buildConfigField "String", "SERVER_URL", '"http://api.openweathermap.org/data/2.5/forecast"'
             buildConfigField "String", "API_KEY", '"c7b7f8988712ed045145446d06b3931b"'
         }
@@ -102,8 +103,6 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:$arch_version"
     kapt "android.arch.lifecycle:compiler:$arch_version"
 
-    implementation 'com.google.code.gson:gson:2.8.4'
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.jakewharton.timber:timber:4.7.0'
 
@@ -116,6 +115,14 @@ dependencies {
     }
 
     implementation "io.reactivex.rxjava2:rxjava:2.1.6"
+
+    // Retrofit
+    implementation "com.google.code.gson:gson:${gsonVersion}"
+    implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    implementation "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${retrofitVersion}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${okhttpVersion}"
+
 }
 
 apply plugin: 'com.google.gms.google-services'

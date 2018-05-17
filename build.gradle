@@ -47,6 +47,11 @@ ext {
     room_version = "1.1.0"
 
     dagger_version = "2.16"
+
+    //data libraries
+    gsonVersion = '2.8.2'
+    retrofitVersion = '2.3.0'
+    okhttpVersion = '3.8.0'
 }
 
 

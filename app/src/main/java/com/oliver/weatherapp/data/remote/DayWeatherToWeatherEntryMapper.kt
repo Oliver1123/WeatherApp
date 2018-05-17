@@ -2,7 +2,22 @@ package com.oliver.weatherapp.data.remote
 
 import com.oliver.weatherapp.data.local.model.WeatherEntry
 import com.oliver.weatherapp.data.remote.model.DayWeather
+import com.oliver.weatherapp.data.remote.model.WeatherResponse
+import io.reactivex.functions.Function
 import java.util.*
+
+class WeatherResponseToWeatherEntryListMapper(
+        private val cityID: Long
+) : Function<WeatherResponse, List<WeatherEntry>?> {
+    private val itemMapper = DayWeatherToWeatherEntryMapper()
+
+    override fun apply(response: WeatherResponse): List<WeatherEntry>? {
+        return response.dayWeatherList?.map {
+            itemMapper.apply(it)
+                    .also { weatherEntry -> weatherEntry.cityID = cityID  }
+        }
+    }
+}
 
 class DayWeatherToWeatherEntryMapper {
 

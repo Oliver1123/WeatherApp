@@ -3,7 +3,7 @@ package com.oliver.weatherapp.data.di
 import com.oliver.weatherapp.AppExecutors
 import com.oliver.weatherapp.data.local.dao.CitiesDao
 import com.oliver.weatherapp.data.local.dao.WeatherDao
-import com.oliver.weatherapp.data.remote.WeatherDataSource
+import com.oliver.weatherapp.data.remote.WeatherApi
 import com.oliver.weatherapp.data.repositories.CitiesRepositoryImpl
 import com.oliver.weatherapp.data.repositories.WeatherRepositoryImpl
 import com.oliver.weatherapp.domain.repositories.CitiesRepository
@@ -23,7 +23,8 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideWeatherRepository(executors: AppExecutors, weatherDao: WeatherDao, dataSource: WeatherDataSource): WeatherRepository {
-        return WeatherRepositoryImpl(executors, weatherDao, dataSource)
+    fun provideWeatherRepository(executors: AppExecutors, weatherDao: WeatherDao,
+                                 weatherApi: WeatherApi): WeatherRepository {
+        return WeatherRepositoryImpl(executors, weatherDao, weatherApi)
     }
 }

@@ -3,7 +3,8 @@ package com.oliver.weatherapp.data.repositories
 import com.oliver.weatherapp.AppExecutors
 import com.oliver.weatherapp.data.local.dao.WeatherDao
 import com.oliver.weatherapp.data.local.mapper.WeatherEntryToWeatherMapper
-import com.oliver.weatherapp.data.remote.WeatherDataSource
+import com.oliver.weatherapp.data.remote.WeatherApi
+import com.oliver.weatherapp.data.remote.WeatherResponseToWeatherEntryListMapper
 import com.oliver.weatherapp.domain.model.WeatherItem
 import com.oliver.weatherapp.domain.repositories.WeatherRepository
 import io.reactivex.Flowable
@@ -14,26 +15,29 @@ import java.util.*
 class WeatherRepositoryImpl(
         private val executors: AppExecutors,
         private val weatherDao: WeatherDao,
-        private val weatherDataSource: WeatherDataSource
+        private val weatherApi: WeatherApi
 ) : WeatherRepository {
     private val isInitializedForCity = HashSet<Long>()
 
-    init {
-        observeNewWeatherData()
-    }
+    private fun requestForecast(cityID: Long, latitude: Double, longitude: Double) {
+        weatherApi.getForecast(latitude, longitude)
+                .map(WeatherResponseToWeatherEntryListMapper(cityID))
+                .doOnSuccess { weatherEntries ->
+                    Timber.d("saveToDB: ${weatherEntries?.size}")
+                    deleteOldData()
 
-    private fun observeNewWeatherData() {
-        weatherDataSource.getWeather().observeForever { weatherEntries ->
-            executors.diskIO().execute {
-                Timber.d("observeNewWeatherData: ${weatherEntries?.size}")
-                deleteOldData()
-
-                weatherEntries?.let {
-                    weatherDao.bulkInsert(*it)
+                    weatherEntries?.let {
+                        weatherDao.bulkInsert(*it.toTypedArray())
+                    }
                 }
-
-            }
-        }
+                .subscribe(
+                        { weatherEntries ->
+                            Timber.d("observeNewWeatherData: ${weatherEntries?.size}")
+                        },
+                        { throwable ->
+                            Timber.e(throwable)
+                        }
+                )
     }
 
     private fun deleteOldData() {
@@ -59,7 +63,7 @@ class WeatherRepositoryImpl(
 
         executors.diskIO().execute {
             if (isFetchNeeded(cityID)) {
-                weatherDataSource.fetchForecast(cityID, latitude, longitude)
+                requestForecast(cityID, latitude, longitude)
             }
         }
     }
@@ -90,7 +94,7 @@ class WeatherRepositoryImpl(
     override fun forceWeatherRefresh(cityID: Long, latitude: Double, longitude: Double) {
         executors.diskIO().execute {
             weatherDao.deleteWeatherForCity(cityID)
-            weatherDataSource.fetchForecast(cityID, latitude, longitude)
+            requestForecast(cityID, latitude, longitude)
         }
     }
 }
