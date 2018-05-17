@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion androidCompileSdkVersion
@@ -50,6 +51,11 @@ android {
             splits.abi.enable = false
             splits.density.enable = false
             aaptOptions.cruncherEnabled = false
+
+            // Only use this flag on builds you don't proguard or upload to beta-by-crashlytics
+            ext.alwaysUpdateBuildId = false
+            // Disable fabric build ID generation for debug builds
+            ext.enableCrashlytics = false
         }
         release {
             minifyEnabled true  // shrink
@@ -102,4 +108,11 @@ dependencies {
 
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+    implementation 'com.google.firebase:firebase-core:15.0.2'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
+        transitive = true
+    }
 }
+
+apply plugin: 'com.google.gms.google-services'
