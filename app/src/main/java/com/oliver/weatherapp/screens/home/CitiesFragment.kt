@@ -182,12 +182,12 @@ class CitiesFragment : BaseFragment() {
     }
 
     private fun showEmptyListResult() {
-        tv_empty_list_message.visibility = View.VISIBLE
+        tv_error_message.visibility = View.VISIBLE
         recycler_view_cities.visibility = View.INVISIBLE
     }
 
     private fun displayCities(cities: List<City>) {
-        tv_empty_list_message.visibility = View.INVISIBLE
+        tv_error_message.visibility = View.INVISIBLE
         recycler_view_cities.visibility = View.VISIBLE
 
         citiesAdapter.setCities(cities)

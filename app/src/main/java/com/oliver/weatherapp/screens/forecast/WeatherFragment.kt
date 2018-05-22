@@ -15,10 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.oliver.weatherapp.R
 import com.oliver.weatherapp.domain.model.WeatherItem
+import com.oliver.weatherapp.screens.*
 
-import com.oliver.weatherapp.screens.MainActivity
-import com.oliver.weatherapp.screens.SelectedCitySharedViewModel
-import com.oliver.weatherapp.screens.ViewModelFactory
 import com.oliver.weatherapp.screens.base.BaseFragment
 import com.oliver.weatherapp.utils.getAppComponent
 import com.oliver.weatherapp.utils.getViewModel
@@ -82,7 +80,7 @@ class WeatherFragment : BaseFragment() {
     private fun initViewModel() {
         viewModel = getViewModel(factory)
 
-        viewModel.getForecast().observe(this, Observer { onWeatherUpdated(it) })
+        viewModel.getData().observe(this, Observer { onDataUpdated(it) })
 
         selectedCitySharedViewModel = ViewModelProviders.of(activity as MainActivity, factory)
                 .get(SelectedCitySharedViewModel::class.java)
@@ -92,6 +90,36 @@ class WeatherFragment : BaseFragment() {
                 setToolbarTitle(it.name ?: "")
             }
         })
+    }
+
+    private fun onDataUpdated(dataState: Data<List<WeatherItem>>?) {
+        Timber.d("onDataUpdated: $dataState")
+
+        dataState?.run {
+            when (state) {
+                DataState.LOADING -> {
+                    pb_loader.visibility = View.VISIBLE
+                }
+                DataState.SUCCESS -> {
+                    hideLoaders()
+                    tv_error_message.visibility = View.INVISIBLE
+                    recycler_view_forecast.visibility = View.VISIBLE
+                }
+                DataState.ERROR -> {
+                    hideLoaders()
+
+                    tv_error_message.visibility = View.VISIBLE
+                    recycler_view_forecast.visibility = View.INVISIBLE
+                }
+            }
+            data?.let { displayWeather(it) }
+            message?.let { tv_error_message.text = it }
+        }
+    }
+
+    private fun hideLoaders() {
+        pb_loader.visibility = View.INVISIBLE
+        swipeContainer.isRefreshing = false
     }
 
     private fun restoreState(savedInstanceState: Bundle?) {
@@ -116,24 +144,7 @@ class WeatherFragment : BaseFragment() {
         viewModel.refreshWeather()
     }
 
-    private fun onWeatherUpdated(forecast: List<WeatherItem>?) {
-        swipeContainer.isRefreshing = false
-        if (forecast == null || forecast.isEmpty()) {
-            showEmptyListResult()
-        } else {
-            displayWeather(forecast)
-        }
-    }
-
-    private fun showEmptyListResult() {
-        tv_empty_list_message.visibility = View.VISIBLE
-        recycler_view_forecast.visibility = View.INVISIBLE
-    }
-
     private fun displayWeather(weatherItem: List<WeatherItem>) {
-        tv_empty_list_message.visibility = View.INVISIBLE
-        recycler_view_forecast.visibility = View.VISIBLE
-
         weatherAdapter.setForecast(weatherItem)
 
         tryToRestoreScrolledPosition(weatherItem.size)
@@ -150,11 +161,10 @@ class WeatherFragment : BaseFragment() {
     companion object {
 
         fun newInstance(): WeatherFragment {
-
             val args = Bundle()
             val fragment = WeatherFragment()
             fragment.arguments = args
-            Timber.d( "newInstance: $fragment")
+            Timber.d("newInstance: $fragment")
             return fragment
         }
     }

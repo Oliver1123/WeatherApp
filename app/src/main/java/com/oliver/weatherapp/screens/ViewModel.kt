@@ -8,6 +8,10 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
+enum class DataState { LOADING, SUCCESS, ERROR }
+
+data class Data<out T> constructor(val state: DataState, val data: T? = null, val message: String? = null)
+
 @Singleton
 class ViewModelFactory @Inject constructor(
         private val creators: Map<Class<out ViewModel>,
