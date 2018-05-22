@@ -9,6 +9,8 @@ import com.oliver.weatherapp.domain.repositories.WeatherRepository
 import com.oliver.weatherapp.screens.Data
 import com.oliver.weatherapp.screens.DataState
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -20,7 +22,6 @@ class WeatherViewModel @Inject constructor(
     private var currentCity: City? = null
     private val disposable = CompositeDisposable()
 
-
     fun getData(): LiveData<Data<List<WeatherItem>>> = data
 
     fun setCity(city: City) {
@@ -28,19 +29,17 @@ class WeatherViewModel @Inject constructor(
             currentCity = city
 
             terminateLoading()
-            disposable.add(
-                    repository.getForecast(city.id, city.latitude, city.longitude)
-                            .doOnSubscribe { data.postValue(Data(DataState.LOADING)) }
-                            .subscribe(
-                                    {
-                                        data.postValue(Data(DataState.SUCCESS, data = it))
-                                    },
-                                    {
-                                        Timber.e(it)
-                                        data.postValue(Data(DataState.ERROR, message = it.message))
-                                    }
-                            )
-            )
+            disposable += repository.getForecast(city.id, city.latitude, city.longitude)
+                    .doOnSubscribe { data.postValue(Data(DataState.LOADING)) }
+                    .subscribeBy(
+                            onNext = {
+                                data.postValue(Data(DataState.SUCCESS, data = it))
+                            },
+                            onError = {
+                                Timber.e(it)
+                                data.postValue(Data(DataState.ERROR, message = it.message))
+                            }
+                    )
         }
     }
 

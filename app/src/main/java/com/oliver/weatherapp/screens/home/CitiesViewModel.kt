@@ -6,6 +6,8 @@ import android.arch.lifecycle.ViewModel
 import com.oliver.weatherapp.domain.model.City
 import com.oliver.weatherapp.domain.repositories.CitiesRepository
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -17,12 +19,11 @@ class CitiesViewModel @Inject constructor(
 
     init {
         Timber.d("CitiesViewModel: constructor repository: $repository")
-        disposable.add(repository.getCities()
-                .subscribe(
-                        cities::postValue,
-                        { Timber.e(it) }
+        disposable += repository.getCities()
+                .subscribeBy(
+                        onNext = cities::postValue,
+                        onError = { Timber.e(it) }
                 )
-        )
     }
 
     fun getCities(): LiveData<List<City>> = cities
