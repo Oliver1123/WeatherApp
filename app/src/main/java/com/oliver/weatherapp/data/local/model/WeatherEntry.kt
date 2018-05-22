@@ -12,15 +12,10 @@ data class WeatherEntry (
     var cityID: Long = 0,
     var weatherIconId: Int = 0,
     var date: Date = Date(0),
-    var min: Double = 0.toDouble(),
-    var max: Double = 0.toDouble(),
-    var humidity: Double = 0.toDouble(),
-    var wind: Double = 0.toDouble(),
-    var degrees: Double = 0.toDouble(),
-    var rainVolume: Double = 0.toDouble()
-) {
-
-    fun areTheSame(entry: WeatherEntry): Boolean {
-        return cityID == entry.cityID && date == entry.date
-    }
-}
+    var min: Double = 0.0,
+    var max: Double = 0.0,
+    var humidity: Double = 0.0,
+    var wind: Double = 0.0,
+    var degrees: Double = 0.0,
+    var rainVolume: Double = 0.0
+)

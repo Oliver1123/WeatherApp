@@ -10,8 +10,8 @@ data class CityEntry(
         var id: Long = 0,
         var name: String? = null,
         var address: String? = null,
-        var latitude: Double = 0.toDouble(),
-        var longitude: Double = 0.toDouble()
+        var latitude: Double = 0.0,
+        var longitude: Double = 0.0
 ) {
     @Ignore
     constructor(name: String?, address: String?, latitude: Double, longitude: Double) :
