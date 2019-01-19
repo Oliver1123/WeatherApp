@@ -9,10 +9,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
-import javax.inject.Inject
 
-class CitiesViewModel @Inject constructor(
-        private val repository: CitiesRepository
+class CitiesViewModel(
+    private val repository: CitiesRepository
 ) : ViewModel() {
     private val cities: MutableLiveData<List<City>> = MutableLiveData()
     private val disposable = CompositeDisposable()
@@ -20,10 +19,10 @@ class CitiesViewModel @Inject constructor(
     init {
         Timber.d("CitiesViewModel: constructor repository: $repository")
         disposable += repository.getCities()
-                .subscribeBy(
-                        onNext = cities::postValue,
-                        onError = { Timber.e(it) }
-                )
+            .subscribeBy(
+                onNext = cities::postValue,
+                onError = { Timber.e(it) }
+            )
     }
 
     fun getCities(): LiveData<List<City>> = cities

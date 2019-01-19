@@ -11,9 +11,12 @@ import com.oliver.weatherapp.screens.base.BaseActivity
 import com.oliver.weatherapp.screens.forecast.WeatherFragment
 import com.oliver.weatherapp.screens.help.HelpFragment
 import com.oliver.weatherapp.screens.home.CitiesFragment
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class MainActivity : BaseActivity(), CitiesFragment.CitiesFragmentInteractionListener, FragmentManager.OnBackStackChangedListener {
+
+    val sharedViewModel: SelectedCitySharedViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

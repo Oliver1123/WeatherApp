@@ -4,9 +4,8 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.oliver.weatherapp.domain.model.City
-import javax.inject.Inject
 
-class SelectedCitySharedViewModel @Inject constructor() : ViewModel() {
+class SelectedCitySharedViewModel : ViewModel() {
     private val selectedCity: MutableLiveData<City> = MutableLiveData()
 
     fun setCity(city: City) {

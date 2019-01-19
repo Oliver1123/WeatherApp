@@ -12,10 +12,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
-import javax.inject.Inject
 
-class WeatherViewModel @Inject constructor(
-        private val repository: WeatherRepository
+class WeatherViewModel(
+    private val repository: WeatherRepository
 ) : ViewModel() {
 
     private val data: MutableLiveData<Data<List<WeatherItem>>> = MutableLiveData()
@@ -30,16 +29,16 @@ class WeatherViewModel @Inject constructor(
 
             terminateLoading()
             disposable += repository.getForecast(city.id, city.latitude, city.longitude)
-                    .doOnSubscribe { data.postValue(Data(DataState.LOADING)) }
-                    .subscribeBy(
-                            onNext = {
-                                data.postValue(Data(DataState.SUCCESS, data = it))
-                            },
-                            onError = {
-                                Timber.e(it)
-                                data.postValue(Data(DataState.ERROR, message = it.message))
-                            }
-                    )
+                .doOnSubscribe { data.postValue(Data(DataState.LOADING)) }
+                .subscribeBy(
+                    onNext = {
+                        data.postValue(Data(DataState.SUCCESS, data = it))
+                    },
+                    onError = {
+                        Timber.e(it)
+                        data.postValue(Data(DataState.ERROR, message = it.message))
+                    }
+                )
         }
     }
 

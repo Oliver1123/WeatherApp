@@ -2,7 +2,6 @@ package com.oliver.weatherapp.screens.home
 
 
 import android.app.Activity.RESULT_OK
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -23,21 +22,17 @@ import com.oliver.weatherapp.R
 import com.oliver.weatherapp.domain.model.City
 import com.oliver.weatherapp.screens.MainActivity
 import com.oliver.weatherapp.screens.SelectedCitySharedViewModel
-import com.oliver.weatherapp.screens.ViewModelFactory
 import com.oliver.weatherapp.screens.base.BaseFragment
-import com.oliver.weatherapp.utils.getAppComponent
-import com.oliver.weatherapp.utils.getViewModel
 import com.oliver.weatherapp.utils.observe
 import kotlinx.android.synthetic.main.fragment_cities.*
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import javax.inject.Inject
 
 class CitiesFragment : BaseFragment() {
     private val PLACE_PICKER_REQUEST = 111
     private val KEY_FIST_VISIBLE_POSITION = "KEY_FIST_VISIBLE_POSITION"
 
-    @Inject lateinit var factory: ViewModelFactory
-    private lateinit var viewModel: CitiesViewModel
+    private val citiesViewModel : CitiesViewModel by viewModel()
     private lateinit var selectedCitySharedViewModel: SelectedCitySharedViewModel
 
 
@@ -53,7 +48,7 @@ class CitiesFragment : BaseFragment() {
 
     private val mOnCityClickListener = object : CitiesAdapter.OnCityClickListener {
         override fun onDeleteClick(view: View, city: City, position: Int) {
-            viewModel.deleteCity(city)
+            citiesViewModel.deleteCity(city)
         }
 
         override fun onItemClick(view: View, city: City, position: Int) {
@@ -81,7 +76,6 @@ class CitiesFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getAppComponent().inject(this)
 
         rootView = view
         initViewModel()
@@ -119,11 +113,10 @@ class CitiesFragment : BaseFragment() {
 
     private fun initViewModel() {
         // Get the ViewModel from the factory
-        viewModel = getViewModel(factory)
-        observe(viewModel.getCities(), this@CitiesFragment::onCitiesUpdated)
 
-        selectedCitySharedViewModel = ViewModelProviders.of(activity as MainActivity, factory)
-                .get(SelectedCitySharedViewModel::class.java)
+        observe(citiesViewModel.getCities(), this@CitiesFragment::onCitiesUpdated)
+
+        selectedCitySharedViewModel = (activity as MainActivity).sharedViewModel
     }
 
     // save scrolled position here, because onSaveInstanceState can be triggered after onDestroyView
@@ -167,7 +160,7 @@ class CitiesFragment : BaseFragment() {
         Timber.d("handleSelectedPlace: name: $name address $address latlng: $latLng")
 
         val city = City(name, address, latLng.latitude, latLng.longitude)
-        viewModel.addCity(city)
+        citiesViewModel.addCity(city)
 
         Snackbar.make(view!!, R.string.msg_place_saved, Snackbar.LENGTH_SHORT).show()
     }

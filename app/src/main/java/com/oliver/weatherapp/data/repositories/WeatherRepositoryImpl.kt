@@ -13,31 +13,31 @@ import timber.log.Timber
 import java.util.*
 
 class WeatherRepositoryImpl(
-        private val executors: AppExecutors,
-        private val weatherDao: WeatherDao,
-        private val weatherApi: WeatherApi
+    private val executors: AppExecutors,
+    private val weatherDao: WeatherDao,
+    private val weatherApi: WeatherApi
 ) : WeatherRepository {
     private val isInitializedForCity = HashSet<Long>()
 
     private fun requestForecast(cityID: Long, latitude: Double, longitude: Double) {
         weatherApi.getForecast(latitude, longitude)
-                .map(WeatherResponseToWeatherEntryListMapper(cityID))
-                .doOnSuccess { weatherEntries ->
-                    Timber.d("saveToDB: ${weatherEntries?.size}")
-                    deleteOldData()
+            .map(WeatherResponseToWeatherEntryListMapper(cityID))
+            .doOnSuccess { weatherEntries ->
+                Timber.d("saveToDB: ${weatherEntries?.size}")
+                deleteOldData()
 
-                    weatherEntries?.let {
-                        weatherDao.bulkInsert(*it.toTypedArray())
-                    }
+                weatherEntries?.let {
+                    weatherDao.bulkInsert(*it.toTypedArray())
                 }
-                .subscribe(
-                        { weatherEntries ->
-                            Timber.d("observeNewWeatherData: ${weatherEntries?.size}")
-                        },
-                        { throwable ->
-                            Timber.e(throwable)
-                        }
-                )
+            }
+            .subscribe(
+                { weatherEntries ->
+                    Timber.d("observeNewWeatherData: ${weatherEntries?.size}")
+                },
+                { throwable ->
+                    Timber.e(throwable)
+                }
+            )
     }
 
     private fun deleteOldData() {
@@ -46,13 +46,17 @@ class WeatherRepositoryImpl(
         weatherDao.deleteOldWeather(today)
     }
 
-    override fun getForecast(cityID: Long, latitude: Double, longitude: Double): Flowable<List<WeatherItem>> {
+    override fun getForecast(
+        cityID: Long,
+        latitude: Double,
+        longitude: Double
+    ): Flowable<List<WeatherItem>> {
 
         initialize(cityID, latitude, longitude)
         //        weatherDataSource.fetchForecast(cityID, latitude, longitude);
         return weatherDao.getForecast(cityID)
-                .subscribeOn(Schedulers.io())
-                .map(WeatherEntryToWeatherMapper())
+            .subscribeOn(Schedulers.io())
+            .map(WeatherEntryToWeatherMapper())
     }
 
 
@@ -85,9 +89,11 @@ class WeatherRepositoryImpl(
 
         val count = weatherDao.countFutureWeatherForCity(cityID, requiredDate.time)
         val isFetchNeeded = count == 0
-        Timber.d("isFetchNeeded: $isFetchNeeded " +
-                "requiredUpdateDate: ${requiredDate.time} " +
-                "recordsCount: $count")
+        Timber.d(
+            "isFetchNeeded: $isFetchNeeded " +
+                    "requiredUpdateDate: ${requiredDate.time} " +
+                    "recordsCount: $count"
+        )
         return isFetchNeeded
     }
 

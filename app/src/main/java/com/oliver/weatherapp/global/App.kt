@@ -5,30 +5,31 @@ import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import com.oliver.weatherapp.BuildConfig
-import com.oliver.weatherapp.global.di.AppComponent
-import com.oliver.weatherapp.global.di.DaggerAppComponent
+import com.oliver.weatherapp.data.di.localModule
+import com.oliver.weatherapp.data.di.networkModule
+import com.oliver.weatherapp.data.di.repositoryModule
+import com.oliver.weatherapp.global.di.viewModelModule
 import com.oliver.weatherapp.global.logger.ReleaseLogTree
+import com.oliver.weatherapp.utilsModule
 import io.fabric.sdk.android.Fabric
+import org.koin.android.ext.android.startKoin
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
 
 public class App : Application() {
 
-    lateinit var appComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
 
         initTimber()
         initCrashlytics()
-        initDagger()
+        initKoin()
     }
 
-    private fun initDagger() {
-        appComponent = DaggerAppComponent.builder()
-                .application(this)
-                .build()
+    private fun initKoin() {
+        startKoin(this, modules)
     }
 
     private fun initTimber() {
@@ -41,9 +42,18 @@ public class App : Application() {
     private fun initCrashlytics() {
         // Set up Crashlytics, disabled for debug builds
         val crashlyticsKit = Crashlytics.Builder()
-                .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-                .build()
+            .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+            .build()
 
         Fabric.with(this, crashlyticsKit)
     }
 }
+
+val modules = listOf(
+    localModule,
+    networkModule,
+    repositoryModule,
+    viewModelModule,
+
+    utilsModule
+)

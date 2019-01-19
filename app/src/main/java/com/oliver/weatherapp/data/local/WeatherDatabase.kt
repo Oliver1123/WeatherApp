@@ -8,7 +8,12 @@ import com.oliver.weatherapp.data.local.dao.WeatherDao
 import com.oliver.weatherapp.data.local.model.CityEntry
 import com.oliver.weatherapp.data.local.model.WeatherEntry
 
-@Database(entities = [CityEntry::class, WeatherEntry::class], version = 1)
+@Database(
+    entities = [
+        CityEntry::class, WeatherEntry::class
+    ],
+    version = 1
+)
 @TypeConverters(DateConverter::class)
 abstract class WeatherDatabase : RoomDatabase() {
 

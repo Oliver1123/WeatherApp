@@ -10,16 +10,16 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-class CitiesRepositoryImpl  (
-        private val executors: AppExecutors,
-        private val citiesDao: CitiesDao)
-    : CitiesRepository {
+class CitiesRepositoryImpl(
+    private val executors: AppExecutors,
+    private val citiesDao: CitiesDao
+) : CitiesRepository {
 
 
     override fun getCities(): Flowable<List<City>> =
-            citiesDao.getAll()
-                    .map(CityEntityToCityMapper())
-                    .subscribeOn(Schedulers.io())
+        citiesDao.getAll()
+            .map(CityEntityToCityMapper())
+            .subscribeOn(Schedulers.io())
 
     override fun addCity(city: City) {
         Timber.d("addCity: $city")
